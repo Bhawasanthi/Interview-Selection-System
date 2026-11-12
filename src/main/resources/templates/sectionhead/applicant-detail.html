@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Applicant Details', 'sectionhead', 'applicants', ~{::main})}">
+<body>
+<main>
+
+    <a th:href="@{/sectionhead/applicants}" class="back-link">
+        <i class="fa-solid fa-arrow-left"></i> Back to Applicants
+    </a>
+
+    <div class="page-head">
+        <div>
+            <h1 th:text="${app.student.fullName}">Student Name</h1>
+            <p th:text="${app.student.email}">email</p>
+        </div>
+        <div class="actions">
+            <th:block th:replace="~{fragments/app :: status(${app.status})}"></th:block>
+        </div>
+    </div>
+
+
+    <!-- INTERVIEW (if scheduled) -->
+
+    <div class="card-gov" th:if="${interview != null}">
+        <div class="card-gov-header">
+            <h2><i class="fa-solid fa-calendar-check"></i> Interview</h2>
+            <th:block th:replace="~{fragments/app :: status(${interview.status})}"></th:block>
+        </div>
+        <div class="card-gov-body">
+            <dl class="detail-list cols-3">
+                <div><dt>Date &amp; Time</dt><dd th:text="${#temporals.format(interview.interviewDate, 'dd/MM/yyyy hh:mm a')}"></dd></div>
+                <div><dt>Venue</dt><dd th:text="${interview.venue}"></dd></div>
+                <div><dt>Panel Member</dt><dd th:text="${interview.user.name}"></dd></div>
+            </dl>
+        </div>
+    </div>
+
+    <th:block th:if="${interview != null and !#lists.isEmpty(marks)}">
+        <div th:replace="~{fragments/applicant :: marksTable(${marks}, ${totalScore})}"></div>
+    </th:block>
+
+
+    <th:block th:replace="~{fragments/applicant :: applicantDetails(${app.student}, ${app}, ${olResults})}"></th:block>
+
+</main>
+</body>
+</html>

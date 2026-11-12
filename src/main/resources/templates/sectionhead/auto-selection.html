@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Auto Selection', 'sectionhead', 'auto-selection', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>Auto Selection</h1>
+            <p>Automatically shortlist eligible applicants using the selection conditions for
+                <strong th:text="${year}">2026</strong>.</p>
+        </div>
+    </div>
+
+
+    <div class="stat-grid">
+
+        <div class="stat">
+            <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+            <div><div class="stat-value" th:text="${totalApplicants}">0</div><div class="stat-label">Total Applicants</div></div>
+        </div>
+
+        <div class="stat amber">
+            <div class="stat-icon"><i class="fa-solid fa-hourglass-half"></i></div>
+            <div><div class="stat-value" th:text="${pendingCount}">0</div><div class="stat-label">Pending</div></div>
+        </div>
+
+        <div class="stat blue">
+            <div class="stat-icon"><i class="fa-solid fa-user-check"></i></div>
+            <div><div class="stat-value" th:text="${shortlistedCount}">0</div><div class="stat-label">Shortlisted</div></div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-icon"><i class="fa-solid fa-user-xmark"></i></div>
+            <div><div class="stat-value" th:text="${notQualifiedCount}">0</div><div class="stat-label">Not Qualified</div></div>
+        </div>
+
+    </div>
+
+
+    <div class="row g-4">
+
+        <div class="col-lg-7">
+
+            <div class="card-gov">
+
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-list-check"></i> Conditions for <span th:text="${year}">2026</span></h2>
+                    <a th:href="@{/sectionhead/conditions(year=${year})}" class="btn btn-sm btn-ghost">
+                        <i class="fa-solid fa-pen"></i> Edit
+                    </a>
+                </div>
+
+                <div class="table-scroll" th:if="${!#lists.isEmpty(conditions)}">
+                    <table class="table-gov">
+                        <thead><tr><th>Subject</th><th>Minimum Grade</th></tr></thead>
+                        <tbody>
+                        <tr th:each="c : ${conditions}">
+                            <td th:text="${c.subjectName}">Subject</td>
+                            <td><span class="grade-pill" th:classappend="'g-' + ${c.minGrade}" th:text="${c.minGrade}">A</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <th:block th:if="${#lists.isEmpty(conditions)}">
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fa-solid fa-list-check"></i></div>
+                        <h3>No selection conditions</h3>
+                        <p>Set the minimum O/L grades for this year before running auto selection.</p>
+                        <a th:href="@{/sectionhead/conditions(year=${year})}" class="btn btn-maroon">Set Conditions</a>
+                    </div>
+                </th:block>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-lg-5">
+
+            <form class="card-gov accent" th:action="@{/sectionhead/run-selection}" method="post"
+                  data-confirm="Run auto selection now? Applicants who meet every condition will be shortlisted; the others will be marked Not Qualified."
+                  data-confirm-title="Run Auto Selection"
+                  data-confirm-ok="Run Selection">
+
+                <input type="hidden" name="year" th:value="${year}">
+
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-wand-magic-sparkles"></i> Run Auto Selection</h2>
+                </div>
+
+                <div class="card-gov-body">
+                    <ul class="check-list small mb-0">
+                        <li><i class="fa-solid fa-check"></i> Checks every Pending, Shortlisted and Not Qualified applicant.</li>
+                        <li><i class="fa-solid fa-check"></i> Can be run again after changing the conditions.</li>
+                        <li><i class="fa-solid fa-lock text-muted"></i>
+                            <span><strong th:text="${lockedCount}">0</strong> applicants already invited or interviewed are not changed.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card-gov-footer">
+                    <button type="submit" class="btn btn-maroon w-100" th:disabled="${#lists.isEmpty(conditions)}">
+                        <i class="fa-solid fa-play"></i> Run Auto Selection
+                    </button>
+                </div>
+
+            </form>
+
+
+            <!-- NOT-QUALIFIED LETTERS -->
+
+            <form class="card-gov" th:action="@{/sectionhead/notify-not-qualified}" method="post"
+                  th:if="${notQualifiedCount > 0}"
+                  data-confirm="Email the 'not selected for interview' letter to every not-qualified student who has not received it yet?"
+                  data-confirm-title="Send Not-Qualified Letters"
+                  data-confirm-ok="Send Letters">
+
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-envelope"></i> Not-Qualified Letters</h2>
+                </div>
+
+                <div class="card-gov-body small">
+                    <p class="mb-2">
+                        Students who do not meet the conditions are emailed a letter automatically when auto selection runs.
+                        The letter is also shown in their Student Portal.
+                    </p>
+                    <p class="mb-0" th:if="${unnotifiedCount > 0}">
+                        <strong th:text="${unnotifiedCount}">0</strong> of <strong th:text="${notQualifiedCount}">0</strong>
+                        not-qualified students have not been emailed yet.
+                    </p>
+                    <p class="mb-0 text-success" th:if="${unnotifiedCount == 0}">
+                        <i class="fa-solid fa-circle-check"></i> All not-qualified students have been emailed.
+                    </p>
+                    <p class="mb-0 mt-2 text-warning-emphasis" th:if="${unnotifiedCount > 0 and !emailConfigured}">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Email is not set up yet (Admin &gt; System Settings &gt; Email).
+                    </p>
+                </div>
+
+                <div class="card-gov-footer" th:if="${unnotifiedCount > 0}">
+                    <button type="submit" class="btn btn-outline-maroon w-100" th:disabled="${!emailConfigured}">
+                        <i class="fa-solid fa-paper-plane"></i> Send Letters Now
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</main>
+</body>
+</html>

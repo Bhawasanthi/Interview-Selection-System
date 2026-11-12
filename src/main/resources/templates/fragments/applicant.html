@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- =====================================================
+     APPLICANT DETAIL CARDS
+     Shared by Section Head, Admin and Interview Panel.
+     Parameters: student, app (may be null), olResults
+===================================================== -->
+
+<th:block th:fragment="applicantDetails(student, app, olResults)">
+
+    <div class="row g-4">
+
+        <div class="col-lg-6">
+
+            <div class="card-gov">
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-user"></i> Personal Details</h2>
+                </div>
+                <div class="card-gov-body">
+                    <dl class="detail-list">
+                        <div class="span-all"><dt>Full Name</dt><dd th:text="${student.fullName ?: '-'}"></dd></div>
+                        <div class="span-all"><dt>Name with Initials</dt><dd th:text="${student.nameWithInitials ?: '-'}"></dd></div>
+                        <div><dt>NIC</dt><dd th:text="${student.nic ?: '-'}"></dd></div>
+                        <div><dt>Gender</dt><dd th:text="${student.gender ?: '-'}"></dd></div>
+                        <div><dt>Date of Birth</dt><dd th:text="${student.dateOfBirth != null ? #temporals.format(student.dateOfBirth, 'dd/MM/yyyy') : '-'}"></dd></div>
+                        <div>
+                            <dt>Age (31st January)</dt>
+                            <dd th:text="${student.ageYears != null ? student.ageYears + 'y ' + student.ageMonths + 'm ' + student.ageDays + 'd' : '-'}"></dd>
+                        </div>
+                        <div><dt>Email</dt><dd th:text="${student.email ?: '-'}"></dd></div>
+                        <div><dt>Phone</dt><dd th:text="${student.phoneNumber ?: '-'}"></dd></div>
+                        <div><dt>WhatsApp</dt><dd th:text="${student.whatsappNumber ?: '-'}"></dd></div>
+                        <div><dt>Learning Medium</dt><dd th:text="${student.learningMedium ?: '-'}"></dd></div>
+                        <div class="span-all"><dt>Permanent Address</dt><dd th:text="${student.permanentAddress ?: '-'}"></dd></div>
+                        <div><dt>Guardian</dt><dd th:text="${student.guardianName ?: '-'}"></dd></div>
+                        <div><dt>Guardian Phone</dt><dd th:text="${student.guardianPhone ?: '-'}"></dd></div>
+                    </dl>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="col-lg-6">
+
+            <div class="card-gov" th:if="${app != null}">
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-file-lines"></i> Application Details</h2>
+                </div>
+                <div class="card-gov-body">
+                    <dl class="detail-list">
+                        <div><dt>School</dt><dd th:text="${app.school.schoolName}"></dd></div>
+                        <div><dt>Stream</dt><dd th:text="${app.stream.streamName}"></dd></div>
+                        <div><dt>Application Date</dt><dd th:text="${#temporals.format(app.applicationDate, 'dd/MM/yyyy')}"></dd></div>
+                        <div><dt>Status</dt><dd><th:block th:replace="~{fragments/app :: status(${app.status})}"></th:block></dd></div>
+                        <div class="span-all">
+                            <dt>Desired Subjects</dt>
+                            <dd class="subject-chips mt-1">
+                                <span class="subject-chip" th:if="${app.desiredSubject1}" th:text="${app.desiredSubject1}"></span>
+                                <span class="subject-chip" th:if="${app.desiredSubject2}" th:text="${app.desiredSubject2}"></span>
+                                <span class="subject-chip" th:if="${app.desiredSubject3}" th:text="${app.desiredSubject3}"></span>
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card-gov">
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-school"></i> O/L School &amp; Activities</h2>
+                </div>
+                <div class="card-gov-body">
+                    <dl class="detail-list">
+                        <div class="span-all"><dt>O/L School Address</dt><dd th:text="${student.olSchoolAddress ?: '-'}"></dd></div>
+                        <div><dt>Admission Number</dt><dd th:text="${student.olSchoolAdmissionNumber ?: '-'}"></dd></div>
+                        <div><dt>District</dt><dd th:text="${student.district ?: '-'}"></dd></div>
+                        <div><dt>Date Entered School</dt><dd th:text="${student.dateEnteredSchool != null ? #temporals.format(student.dateEnteredSchool, 'dd/MM/yyyy') : '-'}"></dd></div>
+                        <div><dt>Grade Entered</dt><dd th:text="${student.gradeEntered ?: '-'}"></dd></div>
+                        <div class="span-all">
+                            <dt>Extra-Curricular Activities</dt>
+                            <dd th:text="${#strings.isEmpty(student.extraCurricularActivities) ? '-' : student.extraCurricularActivities}"></dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card-gov">
+
+        <div class="card-gov-header">
+            <h2><i class="fa-solid fa-graduation-cap"></i> O/L Results</h2>
+            <span class="text-muted small">Index Number: <strong class="text-dark" th:text="${student.indexNumber ?: '-'}"></strong></span>
+        </div>
+
+        <div class="table-scroll" th:if="${!#lists.isEmpty(olResults)}">
+            <table class="table-gov">
+                <thead>
+                <tr><th>Subject</th><th style="width: 120px;">Grade</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="r : ${olResults}">
+                    <td th:text="${r.subjectName}">Subject</td>
+                    <td><span class="grade-pill" th:classappend="'g-' + ${r.grade}" th:text="${r.grade}">A</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <th:block th:if="${#lists.isEmpty(olResults)}">
+            <div th:replace="~{fragments/app :: empty('fa-table-list', 'No O/L results', 'This student has not submitted O/L results yet.')}"></div>
+        </th:block>
+
+    </div>
+
+</th:block>
+
+
+
+<!-- =====================================================
+     INTERVIEW MARKS BREAKDOWN
+     Parameters: marks (list of InterviewMark), total
+===================================================== -->
+
+<div th:fragment="marksTable(marks, total)" class="card-gov">
+
+    <div class="card-gov-header">
+        <h2><i class="fa-solid fa-square-poll-vertical"></i> Interview Marks</h2>
+    </div>
+
+    <div class="table-scroll">
+        <table class="table-gov">
+            <thead>
+            <tr><th>Criterion</th><th class="num">Marks</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="m : ${marks}">
+                <td th:insert="~{fragments/app :: criterion(${m.criteria})}"></td>
+                <td class="num" th:text="${m.score}">0</td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td>Total Score</td>
+                <td class="num" th:text="${total}">0</td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

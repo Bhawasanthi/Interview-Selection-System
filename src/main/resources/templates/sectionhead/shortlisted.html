@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Shortlisted Students', 'sectionhead', 'shortlisted', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>Shortlisted Students</h1>
+            <p>Applicants who met every selection condition.</p>
+        </div>
+        <div class="actions">
+            <a th:href="@{/sectionhead/invitations}" class="btn btn-maroon">
+                <i class="fa-solid fa-envelope-open-text"></i> Send Interview Invitations
+            </a>
+        </div>
+    </div>
+
+
+    <div class="card-gov">
+
+        <div class="toolbar">
+            <div class="search-box">
+                <label class="form-label" for="shortSearch">Search</label>
+                <div class="position-relative">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" class="form-control" id="shortSearch" data-filter-search="#shortTable"
+                           placeholder="Name, email or index number">
+                </div>
+            </div>
+            <div class="filter">
+                <label class="form-label" for="shortStatus">Status</label>
+                <select class="form-select" id="shortStatus" data-filter-status="#shortTable">
+                    <option value="">All</option>
+                    <option value="SHORTLISTED">Awaiting Invitation</option>
+                    <option value="INTERVIEW_SCHEDULED">Interview Scheduled</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-scroll" th:if="${!#lists.isEmpty(shortlisted)}">
+            <table class="table-gov table-stack" id="shortTable">
+                <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Index No.</th>
+                    <th>School</th>
+                    <th>Interview</th>
+                    <th>Status</th>
+                    <th class="actions-col">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="app : ${shortlisted}" th:attr="data-status=${app.status}"
+                    th:with="iv=${interviewByApp.get(app.applicationId)}">
+                    <td class="cell-main">
+                        <strong th:text="${app.student.fullName}">Student</strong>
+                        <small th:text="${app.student.email}">email</small>
+                    </td>
+                    <td data-label="Index No." th:text="${app.student.indexNumber}">Index</td>
+                    <td data-label="School" th:text="${app.school.schoolName}">School</td>
+                    <td data-label="Interview">
+                        <span th:if="${iv != null}" th:text="${#temporals.format(iv.interviewDate, 'dd/MM/yyyy hh:mm a')}">Date</span>
+                        <span th:if="${iv == null}" class="text-muted">Not scheduled</span>
+                    </td>
+                    <td data-label="Status"><th:block th:replace="~{fragments/app :: status(${app.status})}"></th:block></td>
+                    <td class="actions-col">
+                        <a th:href="@{/sectionhead/applicant-detail/{id}(id=${app.applicationId})}" class="btn btn-sm btn-outline-maroon">View</a>
+                    </td>
+                </tr>
+                <tr class="filter-empty" hidden>
+                    <td colspan="6" class="text-center text-muted py-4">No students match your search.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <th:block th:if="${#lists.isEmpty(shortlisted)}">
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fa-solid fa-user-check"></i></div>
+                <h3>No shortlisted students yet</h3>
+                <p>Run auto selection to shortlist applicants who meet your selection conditions.</p>
+                <a th:href="@{/sectionhead/auto-selection}" class="btn btn-maroon">Go to Auto Selection</a>
+            </div>
+        </th:block>
+
+    </div>
+
+</main>
+</body>
+</html>

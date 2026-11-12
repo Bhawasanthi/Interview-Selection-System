@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Final Notifications', 'sectionhead', 'final-notifications', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>Final Notifications</h1>
+            <p>Set the admission date, time and venue, then email the admission letter to every selected student in your stream.</p>
+        </div>
+    </div>
+
+
+    <div class="alert alert-warning" th:if="${emailConfigured != true}">
+        <i class="fa-solid fa-triangle-exclamation me-1"></i>
+        Email is not set up yet, so letters will not be emailed. Ask the administrator to set up the school email in <strong>System Settings &rarr; Email</strong>. Everything is still shown to students in the Student Portal.
+    </div>
+
+
+    <form th:action="@{/sectionhead/send-final-notifications}" method="post">
+
+        <div class="row g-4">
+
+            <div class="col-xl-5">
+
+                <div class="card-gov accent">
+
+                    <div class="card-gov-header">
+                        <h2><i class="fa-solid fa-paper-plane"></i> Admission Details</h2>
+                    </div>
+
+                    <div class="card-gov-body">
+
+                        <div class="d-flex flex-wrap gap-2 mb-4">
+                            <span class="count-badge">Selected Applicants: <strong th:text="${selectedCount}">0</strong></span>
+                            <span class="count-badge">Not Selected: <strong th:text="${notSelectedCount}">0</strong></span>
+                        </div>
+
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+                                <label class="form-label required" for="admissionDate">Admission Date</label>
+                                <input type="date" class="form-control" id="admissionDate" name="admissionDate"
+                                       th:value="${admission.date}" data-letter-token="[Admission Date]" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label required" for="admissionTime">Admission Time</label>
+                                <input type="time" class="form-control" id="admissionTime" name="admissionTime"
+                                       th:value="${#strings.isEmpty(admission.time) ? '08:30' : admission.time}"
+                                       data-letter-token="[Admission Time]" required>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label required" for="venue">Venue</label>
+                                <input maxlength="150" type="text" class="form-control" id="venue" name="venue"
+                                       placeholder="e.g. Main School Hall" th:value="${admission.venue}"
+                                       data-letter-token="[Venue]" required>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="notifyNotSelected" name="notifyNotSelected">
+                                    <label class="form-check-label" for="notifyNotSelected">
+                                        Also email the students who were not selected
+                                        (<span th:text="${notSelectedCount}">0</span>)
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-12" th:if="${!#strings.isEmpty(admission.date)}">
+                                <div class="alert alert-info small mb-0">
+                                    <i class="fa-solid fa-circle-info me-1"></i>
+                                    These details are saved and shown to selected students in the Student Portal.
+                                    Change them and send again to inform students of a new date, time or venue.
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="card-gov-footer">
+                        <button type="submit" class="btn btn-ghost" name="action" value="save">
+                            <i class="fa-solid fa-floppy-disk"></i> Save Details Only
+                        </button>
+                        <button type="submit" class="btn btn-maroon" name="action" value="send"
+                                th:disabled="${selectedCount + notSelectedCount == 0}"
+                                data-confirm="Save these details and email the admission letter to every selected student?"
+                                data-confirm-title="Send Admission Letters"
+                                data-confirm-ok="Send Letters">
+                            <i class="fa-solid fa-paper-plane"></i> Save &amp; Send Letters
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-xl-7">
+
+                <div class="card-gov">
+
+                    <div class="card-gov-header">
+                        <h2><i class="fa-solid fa-envelope-open-text"></i> Message Preview</h2>
+                        <ul class="nav nav-pills gap-1" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="btn btn-sm btn-outline-maroon active" data-bs-toggle="pill" data-bs-target="#letterSelected"
+                                        type="button" role="tab">Admission Letter</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="btn btn-sm btn-outline-maroon" data-bs-toggle="pill" data-bs-target="#letterNotSelected"
+                                        type="button" role="tab">Not Selected (optional)</button>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="card-gov-body tab-content">
+                        <div class="tab-pane fade show active" id="letterSelected" role="tabpanel">
+                            <div class="letter" data-letter-preview th:attr="data-letter-template=${selectedLetter}"
+                                 th:text="${selectedLetter}">Letter</div>
+                        </div>
+                        <div class="tab-pane fade" id="letterNotSelected" role="tabpanel">
+                            <div class="letter" th:text="${notSelectedLetter}">Letter</div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+
+    <!-- HISTORY -->
+
+    <div class="card-gov">
+
+        <div class="card-gov-header">
+            <h2><i class="fa-solid fa-clock-rotate-left"></i> Notification History</h2>
+        </div>
+
+        <div class="toolbar" th:if="${!#lists.isEmpty(history)}">
+            <div class="search-box">
+                <label class="form-label" for="histSearch">Search</label>
+                <div class="position-relative">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" class="form-control" id="histSearch" data-filter-search="#histTable" placeholder="Student name">
+                </div>
+            </div>
+            <div class="filter">
+                <label class="form-label" for="histStatus">Delivery</label>
+                <select class="form-select" id="histStatus" data-filter-status="#histTable">
+                    <option value="">All</option>
+                    <option value="SENT">Sent</option>
+                    <option value="FAILED">Not Sent</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-scroll" th:if="${!#lists.isEmpty(history)}">
+            <table class="table-gov table-stack" id="histTable">
+                <thead>
+                <tr><th>Student</th><th>Type</th><th>Date</th><th>Delivery</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="n : ${history}" th:attr="data-status=${n.status}">
+                    <td class="cell-main"><strong th:text="${n.application.student.fullName}">Student</strong></td>
+                    <td data-label="Type" th:text="${n.type == 'INTERVIEW_INVITATION'} ? 'Interview Invitation' : (${n.type == 'NOT_QUALIFIED'} ? 'Not Qualified for Interview' : 'Final Result')">Type</td>
+                    <td data-label="Date" th:text="${#temporals.format(n.sentDate, 'dd/MM/yyyy hh:mm a')}">Date</td>
+                    <td data-label="Delivery"><th:block th:replace="~{fragments/app :: status(${n.status})}"></th:block></td>
+                </tr>
+                <tr class="filter-empty" hidden>
+                    <td colspan="4" class="text-center text-muted py-4">No notifications match your search.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <th:block th:if="${#lists.isEmpty(history)}">
+            <div th:replace="~{fragments/app :: empty('fa-clock-rotate-left', 'No notifications sent yet',
+                'Interview invitations and final results you send will be recorded here.')}"></div>
+        </th:block>
+
+    </div>
+
+</main>
+</body>
+</html>

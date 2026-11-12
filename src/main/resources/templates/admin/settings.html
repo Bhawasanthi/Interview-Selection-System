@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('System Settings', 'admin', 'settings', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>System Settings</h1>
+            <p>Academic year, admissions, interviews, email and the interview marking scale.</p>
+        </div>
+    </div>
+
+
+    <div class="row g-4">
+
+        <!-- ================= TAB MENU ================= -->
+
+        <div class="col-lg-3">
+
+            <nav class="card-gov settings-nav p-2" aria-label="Settings sections">
+                <div class="nav flex-column nav-pills" role="tablist">
+                    <button class="nav-link" th:classappend="${tab == 'general'} ? 'active'" data-bs-toggle="pill"
+                            data-bs-target="#tab-general" type="button" role="tab">
+                        <i class="fa-solid fa-gear"></i> General
+                    </button>
+                    <button class="nav-link" th:classappend="${tab == 'admissions'} ? 'active'" data-bs-toggle="pill"
+                            data-bs-target="#tab-admissions" type="button" role="tab">
+                        <i class="fa-solid fa-door-open"></i> Admissions
+                    </button>
+                    <button class="nav-link" th:classappend="${tab == 'interviews'} ? 'active'" data-bs-toggle="pill"
+                            data-bs-target="#tab-interviews" type="button" role="tab">
+                        <i class="fa-solid fa-calendar-check"></i> Interviews
+                    </button>
+                    <button class="nav-link" th:classappend="${tab == 'email'} ? 'active'" data-bs-toggle="pill"
+                            data-bs-target="#tab-email" type="button" role="tab">
+                        <i class="fa-solid fa-envelope"></i> Email
+                        <span class="ms-auto status st-notselected" th:unless="${emailConfigured == true}">Off</span>
+                    </button>
+                    <button class="nav-link" th:classappend="${tab == 'marking'} ? 'active'" data-bs-toggle="pill"
+                            data-bs-target="#tab-marking" type="button" role="tab">
+                        <i class="fa-solid fa-sliders"></i> Marking Scale
+                    </button>
+                </div>
+            </nav>
+
+
+            <!-- SYSTEM INFORMATION -->
+
+            <div class="card-gov">
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-circle-info"></i> System Information</h2>
+                </div>
+                <div class="card-gov-body">
+                    <dl class="detail-list cols-1 small">
+                        <div class="d-flex justify-content-between"><dt>Academic Year</dt><dd th:text="${settings.academicYear}">2026</dd></div>
+                        <div class="d-flex justify-content-between"><dt>Students</dt><dd th:text="${info.students}">0</dd></div>
+                        <div class="d-flex justify-content-between"><dt>Applications</dt><dd th:text="${info.applications}">0</dd></div>
+                        <div class="d-flex justify-content-between"><dt>Interviews</dt><dd th:text="${info.interviews}">0</dd></div>
+                        <div class="d-flex justify-content-between"><dt>Staff Accounts</dt><dd th:text="${info.staff}">0</dd></div>
+                        <div class="d-flex justify-content-between"><dt>Schools / Streams</dt><dd th:text="${info.schools} + ' / ' + ${info.streams}">0</dd></div>
+                        <div class="d-flex justify-content-between">
+                            <dt>Applications</dt>
+                            <dd>
+                                <span th:if="${settings.applicationsOpen}" class="status st-selected">Open</span>
+                                <span th:unless="${settings.applicationsOpen}" class="status st-notselected">Closed</span>
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- ================= TAB CONTENT ================= -->
+
+        <div class="col-lg-9 tab-content">
+
+
+            <!-- ===== GENERAL ===== -->
+
+            <div class="tab-pane fade" th:classappend="${tab == 'general'} ? 'show active'" id="tab-general" role="tabpanel">
+
+                <form class="card-gov accent" th:action="@{/admin/settings/save}" method="post">
+
+                    <input type="hidden" name="section" value="general">
+
+                    <div class="card-gov-header">
+                        <div>
+                            <h2><i class="fa-solid fa-gear"></i> General</h2>
+                            <small>Applies to every workspace.</small>
+                        </div>
+                    </div>
+
+                    <div class="card-gov-body">
+                        <div class="row g-4">
+
+                            <div class="col-md-6">
+                                <label class="form-label required" for="academicYear">Academic Year</label>
+                                <input type="number" class="form-control" id="academicYear" name="academicYear"
+                                       min="2000" max="2100" th:value="${settings.academicYear}" required>
+                                <div class="form-text">
+                                    The admission year used for selection conditions, cutoff calculation and the
+                                    "Academic Year" shown in the top bar.
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label" for="letterExamYear">G.C.E. Advanced Level year in letters</label>
+                                <input type="text" class="form-control" id="letterExamYear" name="letterExamYear"
+                                       maxlength="20" th:value="${settings.letterExamYear}">
+                                <div class="form-text">
+                                    Printed in "Interview Selection for G.C.E. Advanced Level <strong th:text="${settings.letterExamYear}">2022</strong>".
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label" for="siteNotice">Notice / Announcement</label>
+                                <textarea class="form-control" id="siteNotice" name="siteNotice" rows="3" maxlength="500"
+                                          placeholder="e.g. Applications for the 2026 A/L intake close on 31 October."
+                                          th:text="${settings.siteNotice}"></textarea>
+                                <div class="form-text">Shown on the home page and in every workspace. Leave blank to hide it.</div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="card-gov-footer">
+                        <button type="submit" class="btn btn-maroon"><i class="fa-solid fa-floppy-disk"></i> Save General Settings</button>
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <!-- ===== ADMISSIONS ===== -->
+
+            <div class="tab-pane fade" th:classappend="${tab == 'admissions'} ? 'show active'" id="tab-admissions" role="tabpanel">
+
+                <form class="card-gov accent" th:action="@{/admin/settings/save}" method="post">
+
+                    <input type="hidden" name="section" value="admissions">
+
+                    <div class="card-gov-header">
+                        <div>
+                            <h2><i class="fa-solid fa-door-open"></i> Admissions</h2>
+                            <small>Control who can register and apply.</small>
+                        </div>
+                    </div>
+
+                    <div class="card-gov-body">
+
+                        <div class="setting-row">
+                            <div>
+                                <label class="fw-semibold" for="registrationOpen">Student registration</label>
+                                <div class="form-text mt-0">Allow new students to create an account with the Register button.</div>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="registrationOpen"
+                                       name="registrationOpen" th:checked="${settings.registrationOpen}">
+                            </div>
+                        </div>
+
+                        <div class="setting-row">
+                            <div>
+                                <label class="fw-semibold" for="applicationsOpen">Accept applications</label>
+                                <div class="form-text mt-0">Allow students to submit the A/L application form.</div>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="applicationsOpen"
+                                       name="applicationsOpen" th:checked="${settings.applicationsOpenFlag}">
+                            </div>
+                        </div>
+
+                        <div class="setting-row">
+                            <div>
+                                <label class="fw-semibold" for="applicationDeadline">Application closing date</label>
+                                <div class="form-text mt-0">Applications close automatically after this date. Leave blank for no deadline.</div>
+                            </div>
+                            <input type="date" class="form-control" id="applicationDeadline" name="applicationDeadline"
+                                   style="max-width: 200px;"
+                                   th:value="${settings.applicationDeadline != null ? settings.applicationDeadline : ''}">
+                        </div>
+
+                        <div class="alert mb-0 mt-3" th:classappend="${settings.applicationsOpen} ? 'alert-success' : 'alert-warning'">
+                            <th:block th:if="${settings.applicationsOpen}">
+                                <i class="fa-solid fa-circle-check me-1"></i> Applications are currently <strong>open</strong>.
+                            </th:block>
+                            <th:block th:unless="${settings.applicationsOpen}">
+                                <i class="fa-solid fa-circle-xmark me-1"></i> Applications are currently <strong>closed</strong>.
+                            </th:block>
+                        </div>
+
+                    </div>
+
+                    <div class="card-gov-footer">
+                        <button type="submit" class="btn btn-maroon"><i class="fa-solid fa-floppy-disk"></i> Save Admission Settings</button>
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <!-- ===== INTERVIEWS ===== -->
+
+            <div class="tab-pane fade" th:classappend="${tab == 'interviews'} ? 'show active'" id="tab-interviews" role="tabpanel">
+
+                <form class="card-gov accent" th:action="@{/admin/settings/save}" method="post">
+
+                    <input type="hidden" name="section" value="interviews">
+
+                    <div class="card-gov-header">
+                        <div>
+                            <h2><i class="fa-solid fa-calendar-check"></i> Interviews</h2>
+                            <small>Defaults filled in on the section heads' Interview Invitations form.</small>
+                        </div>
+                    </div>
+
+                    <div class="card-gov-body">
+                        <div class="row g-4">
+
+                            <div class="col-md-8">
+                                <label class="form-label" for="defaultVenue">Default interview venue</label>
+                                <input type="text" class="form-control" id="defaultVenue" name="defaultVenue" maxlength="150"
+                                       placeholder="e.g. Main School Hall" th:value="${settings.defaultVenue}">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label" for="defaultTime">Default interview time</label>
+                                <input type="time" class="form-control" id="defaultTime" name="defaultTime"
+                                       th:value="${settings.defaultTime}">
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="card-gov-footer">
+                        <button type="submit" class="btn btn-maroon"><i class="fa-solid fa-floppy-disk"></i> Save Interview Settings</button>
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <!-- ===== EMAIL ===== -->
+
+            <div class="tab-pane fade" th:classappend="${tab == 'email'} ? 'show active'" id="tab-email" role="tabpanel">
+
+                <div class="alert d-flex align-items-center gap-2"
+                     th:classappend="${emailConfigured == true} ? 'alert-success' : 'alert-warning'">
+                    <th:block th:if="${emailConfigured == true}">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Email is set up. Letters are sent from <strong th:text="${emailSender}">school@gmail.com</strong>.</span>
+                    </th:block>
+                    <th:block th:unless="${emailConfigured == true}">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span th:if="${mail.passwordSaved == true and mail.enabled == false}">Email sending is switched off. Interview and admission letters are only shown in the Student Portal.</span>
+                        <span th:unless="${mail.passwordSaved == true and mail.enabled == false}">Email is not set up yet. Fill in the form below to send interview and admission letters automatically.</span>
+                    </th:block>
+                </div>
+
+
+                <div class="row g-4">
+
+                    <!-- SETTINGS FORM -->
+
+                    <div class="col-xl-7">
+
+                        <form class="card-gov accent mb-0" th:action="@{/admin/settings/email}" method="post" autocomplete="off">
+
+                            <div class="card-gov-header">
+                                <div>
+                                    <h2><i class="fa-solid fa-envelope"></i> Email Account</h2>
+                                    <small>The account that sends interview invitations and admission letters.</small>
+                                </div>
+                                <span th:if="${emailConfigured == true}" class="status st-selected">Set up</span>
+                                <span th:unless="${emailConfigured == true}" class="status st-notselected">Not set up</span>
+                            </div>
+
+                            <div class="card-gov-body">
+
+                                <div class="setting-row">
+                                    <div>
+                                        <label class="fw-semibold" for="mailEnabled">Send emails automatically</label>
+                                        <div class="form-text mt-0">When off, letters are still shown in the Student Portal but not emailed.</div>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="mailEnabled" name="enabled"
+                                               th:checked="${mail.enabled}">
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mt-1">
+
+                                    <div class="col-12">
+                                        <label class="form-label required" for="mailUsername">Gmail address</label>
+                                        <input type="email" class="form-control" id="mailUsername" name="username"
+                                               placeholder="issforschool@gmail.com" th:value="${mail.username}" required>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label" th:classappend="${mail.passwordSaved != true} ? 'required'" for="mailPassword">App Password</label>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="mailPassword" name="password"
+                                                   autocomplete="new-password" spellcheck="false"
+                                                   th:placeholder="${mail.passwordSaved == true} ? 'Saved - leave blank to keep it' : 'abcd efgh ijkl mnop'"
+                                                   th:required="${mail.passwordSaved != true}">
+                                            <button type="button" class="btn btn-ghost" id="togglePw" aria-label="Show password">
+                                                <i class="fa-solid fa-eye"></i>
+                                            </button>
+                                        </div>
+                                        <div class="form-text">
+                                            The 16-character App Password from Google, <strong>not</strong> the normal Gmail password.
+                                            <span th:if="${mail.passwordSaved == true}" class="text-success fw-semibold">
+                                                <i class="fa-solid fa-lock"></i> A password is saved.
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label" for="mailSenderName">Sender name</label>
+                                        <input type="text" class="form-control" id="mailSenderName" name="senderName" maxlength="100"
+                                               placeholder="Leave blank to use the school name" th:value="${mail.senderName}">
+                                        <div class="form-text">Shown as the "From" name in the student's inbox.</div>
+                                    </div>
+
+                                </div>
+
+                                <details class="mt-4">
+                                    <summary class="fw-semibold" style="cursor: pointer; color: var(--maroon);">
+                                        Mail server settings
+                                    </summary>
+                                    <div class="row g-3 mt-1">
+                                        <div class="col-md-6">
+                                            <label class="form-label" for="mailHost">SMTP host</label>
+                                            <input type="text" class="form-control" id="mailHost" name="host" th:value="${mail.host}" required>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label" for="mailPort">Port</label>
+                                            <input type="number" class="form-control" id="mailPort" name="port" min="1" max="65535"
+                                                   th:value="${mail.port}" required>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label" for="mailSecurity">Security</label>
+                                            <select class="form-select" id="mailSecurity" name="security">
+                                                <option value="STARTTLS" th:selected="${mail.security == 'STARTTLS'}">STARTTLS</option>
+                                                <option value="SSL" th:selected="${mail.security == 'SSL'}">SSL</option>
+                                                <option value="NONE" th:selected="${mail.security == 'NONE'}">None (local server)</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 form-text mt-1">For Gmail use smtp.gmail.com, port 587, STARTTLS.</div>
+                                    </div>
+                                </details>
+
+                            </div>
+
+                            <div class="card-gov-footer">
+                                <button type="submit" class="btn btn-ghost" name="action" value="save">
+                                    <i class="fa-solid fa-floppy-disk"></i> Save
+                                </button>
+                                <button type="submit" class="btn btn-maroon" name="action" value="verify">
+                                    <i class="fa-solid fa-plug-circle-check"></i> Save &amp; Test Connection
+                                </button>
+                            </div>
+
+                        </form>
+
+                    </div>
+
+
+                    <!-- HELP + TEST EMAIL -->
+
+                    <div class="col-xl-5">
+
+                        <div class="card-gov">
+                            <div class="card-gov-header">
+                                <h2><i class="fa-solid fa-paper-plane"></i> Send a Test Email</h2>
+                            </div>
+                            <div class="card-gov-body">
+                                <form th:action="@{/admin/settings/test-email}" method="post">
+                                    <label class="form-label" for="testTo">Send to</label>
+                                    <div class="input-group">
+                                        <input maxlength="150" type="email" class="form-control" id="testTo" name="to" placeholder="name@example.com" required>
+                                        <button type="submit" class="btn btn-maroon" th:disabled="${emailConfigured != true}">Send Test</button>
+                                    </div>
+                                    <div class="form-text">Check the inbox and the spam folder.</div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="card-gov mb-0">
+                            <div class="card-gov-header">
+                                <h2><i class="fa-solid fa-circle-question"></i> How to get a Gmail App Password</h2>
+                            </div>
+                            <div class="card-gov-body">
+                                <ol class="small mb-0 ps-3 d-grid gap-2">
+                                    <li>Sign in to the school Gmail account (e.g. <strong>issforschool@gmail.com</strong>).</li>
+                                    <li>Turn on <strong>2-Step Verification</strong> at
+                                        <a href="https://myaccount.google.com/security" target="_blank" rel="noopener">myaccount.google.com/security</a>.</li>
+                                    <li>Open <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener">myaccount.google.com/apppasswords</a>,
+                                        enter a name such as <em>Interview Selection System</em> and click <strong>Create</strong>.</li>
+                                    <li>Copy the 16-character password Google shows and paste it into <strong>App Password</strong> here.</li>
+                                    <li>Click <strong>Save &amp; Test Connection</strong>, then send a test email.</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ===== MARKING SCALE ===== -->
+
+            <div class="tab-pane fade" th:classappend="${tab == 'marking'} ? 'show active'" id="tab-marking" role="tabpanel">
+
+                <div class="card-gov accent">
+
+                    <div class="card-gov-header">
+                        <div>
+                            <h2><i class="fa-solid fa-sliders"></i> <span th:text="'Marking Scale - ' + ${year}">Marking Scale</span></h2>
+                            <small>Marks given by the interview panel for each criterion. For Interview Assessment and Supporting Documents &amp; Eligibility, the panel enters a mark up to the maximum set here.</small>
+                        </div>
+                        <form method="get" th:action="@{/admin/settings}">
+                            <div class="input-group input-group-sm">
+                                <label class="input-group-text" for="yearPick">Year</label>
+                                <input type="number" class="form-control" id="yearPick" name="year" th:value="${year}"
+                                       min="2000" max="2100" style="max-width: 100px;" required>
+                                <button type="submit" class="btn btn-maroon" data-no-loading>Show</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- NO SCALE FOR THIS YEAR -->
+
+                    <div class="empty-state" th:if="${#maps.isEmpty(grouped)}">
+                        <div class="empty-icon"><i class="fa-solid fa-sliders"></i></div>
+                        <h3 th:text="'No marking scale for ' + ${year}">No marking scale</h3>
+                        <p>Interview marks for this year are calculated from this scale. Copy an existing year's scale to get started.</p>
+                        <form th:if="${!#lists.isEmpty(years)}" th:action="@{/admin/marking-config/copy}" method="post"
+                              class="d-inline-flex gap-2 mt-3">
+                            <input type="hidden" name="toYear" th:value="${year}">
+                            <select class="form-select" name="fromYear" aria-label="Copy from year">
+                                <option th:each="y : ${years}" th:value="${y}" th:text="'Copy from ' + ${y}">2026</option>
+                            </select>
+                            <button type="submit" class="btn btn-maroon text-nowrap"><i class="fa-solid fa-copy"></i> Copy Scale</button>
+                        </form>
+                    </div>
+
+                    <!-- MARKING SCALE -->
+
+                    <form th:if="${!#maps.isEmpty(grouped)}" th:action="@{/admin/marking-config/save}" method="post">
+
+                        <input type="hidden" name="year" th:value="${year}">
+
+                        <div class="card-gov-body">
+                            <div class="row g-3">
+
+                                <div class="col-md-6 col-xl-4" th:each="group : ${grouped}">
+
+                                    <div class="marking-group h-100">
+
+                                        <h3 class="marking-title" th:insert="~{fragments/app :: criterion(${group.key})}">Criterion</h3>
+
+                                        <div class="d-grid gap-2">
+                                            <div class="d-flex align-items-center justify-content-between gap-3" th:each="c : ${group.value}">
+                                                <label class="fw-semibold mb-0" th:for="'mark' + ${c.configId}"
+                                                       th:text="${c.optionLabel == 'MAX' ? 'Maximum marks' : #strings.replace(c.optionLabel, '_', ' ')}">Option</label>
+                                                <input type="hidden" name="configId" th:value="${c.configId}">
+                                                <input type="number" step="0.01" min="0" class="form-control text-end" style="max-width: 110px;"
+                                                       name="marks" th:id="'mark' + ${c.configId}" th:value="${c.marks}" required>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="card-gov-footer">
+                            <button type="submit" class="btn btn-maroon"><i class="fa-solid fa-floppy-disk"></i> Save Marking Scale</button>
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var btn = document.getElementById("togglePw");
+        var input = document.getElementById("mailPassword");
+        if (!btn || !input) return;
+        btn.addEventListener("click", function () {
+            var show = input.type === "password";
+            input.type = show ? "text" : "password";
+            btn.querySelector("i").className = show ? "fa-solid fa-eye-slash" : "fa-solid fa-eye";
+        });
+    });
+    </script>
+
+</main>
+</body>
+</html>

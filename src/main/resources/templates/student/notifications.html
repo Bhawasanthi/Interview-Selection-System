@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Interview Notification', 'student', 'notifications', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>Interview Notification</h1>
+            <p>Letters sent to you about your application. The same letters are emailed to you.</p>
+        </div>
+        <div class="actions" th:if="${letter != null or admissionLetter != null or notQualifiedLetter != null}">
+            <button type="button" class="btn btn-ghost" onclick="window.print()">
+                <i class="fa-solid fa-print"></i> Print Letter
+            </button>
+        </div>
+    </div>
+
+
+    <div class="row g-4">
+
+        <div class="col-lg-8">
+
+            <div class="card-gov accent" th:if="${admissionLetter != null}">
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-award"></i> Admission Letter</h2>
+                    <span class="status st-selected">Selected</span>
+                </div>
+                <div class="card-gov-body">
+                    <div class="letter" th:text="${admissionLetter}">Letter</div>
+                </div>
+            </div>
+
+            <div class="card-gov accent" th:if="${notQualifiedLetter != null}">
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-envelope"></i> Interview Selection Result</h2>
+                    <span class="status st-notselected">Not Selected for Interview</span>
+                </div>
+                <div class="card-gov-body">
+                    <div class="letter" th:text="${notQualifiedLetter}">Letter</div>
+                </div>
+            </div>
+
+            <div class="card-gov" th:if="${notQualifiedLetter == null}">
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-envelope-open-text"></i> Interview Invitation Letter</h2>
+                </div>
+                <div class="card-gov-body" th:if="${letter != null}">
+                    <div class="letter" th:text="${letter}">Letter</div>
+                </div>
+                <th:block th:if="${letter == null}">
+                    <div th:replace="~{fragments/app :: empty('fa-envelope', 'No interview invitation yet',
+                        'When you are invited to an interview, the letter from the Principal will appear here.')}"></div>
+                </th:block>
+            </div>
+
+        </div>
+
+
+        <div class="col-lg-4">
+
+            <div class="card-gov">
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-bell"></i> Notification History</h2>
+                </div>
+
+                <ul class="list-unstyled mb-0" th:if="${!#lists.isEmpty(notifications)}">
+                    <li class="d-flex gap-3 px-3 py-3 border-bottom" th:each="n : ${notifications}">
+                        <span class="avatar avatar-sm flex-shrink-0">
+                            <i class="fa-solid" th:classappend="${n.type == 'INTERVIEW_INVITATION'} ? 'fa-calendar-check' : (${n.type == 'NOT_QUALIFIED'} ? 'fa-envelope' : 'fa-award')"></i>
+                        </span>
+                        <div class="flex-grow-1">
+                            <div class="fw-semibold"
+                                 th:text="${n.type == 'INTERVIEW_INVITATION'} ? 'Interview Invitation' : (${n.type == 'NOT_QUALIFIED'} ? 'Interview Selection Result' : 'Final Selection Result')">Type</div>
+                            <div class="small text-muted" th:text="${#temporals.format(n.sentDate, 'dd/MM/yyyy hh:mm a')}">Date</div>
+                        </div>
+                        <th:block th:replace="~{fragments/app :: status(${n.status})}"></th:block>
+                    </li>
+                </ul>
+
+                <th:block th:if="${#lists.isEmpty(notifications)}">
+                    <div th:replace="~{fragments/app :: empty('fa-bell-slash', 'No notifications', 'You have not received any notifications yet.')}"></div>
+                </th:block>
+            </div>
+
+            <div class="alert alert-info small" th:if="${!#lists.isEmpty(notifications)}">
+                <i class="fa-solid fa-circle-info me-1"></i>
+                "Not Sent" means the email could not be delivered, but the information shown in this portal is still valid.
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+</body>
+</html>

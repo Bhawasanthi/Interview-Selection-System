@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Student Details', 'admin', 'students', ~{::main})}">
+<body>
+<main>
+
+    <a th:href="@{/admin/students}" class="back-link">
+        <i class="fa-solid fa-arrow-left"></i> Back to Students
+    </a>
+
+    <div class="page-head">
+        <div>
+            <h1 th:text="${student.fullName ?: student.username}">Student</h1>
+            <p><span th:text="${student.email}">email</span> &middot; username <strong th:text="${student.username}">u</strong></p>
+        </div>
+        <div class="actions">
+            <th:block th:if="${app != null}"><th:block th:replace="~{fragments/app :: status(${app.status})}"></th:block></th:block>
+            <form th:action="@{/admin/students/{id}/reset-password(id=${student.studentId})}" method="post"
+                  th:attr="data-confirm='Give ' + ${student.fullName ?: student.username} + ' a new temporary password? Their current password will stop working.'"
+                  data-confirm-title="Reset Password" data-confirm-ok="Reset Password">
+                <button type="submit" class="btn btn-ghost"><i class="fa-solid fa-key"></i> Reset Password</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="alert alert-info" th:if="${app == null}">
+        <i class="fa-solid fa-circle-info me-1"></i>
+        This student has created an account but has not submitted an application yet.
+    </div>
+
+    <th:block th:replace="~{fragments/applicant :: applicantDetails(${student}, ${app}, ${olResults})}"></th:block>
+
+</main>
+</body>
+</html>

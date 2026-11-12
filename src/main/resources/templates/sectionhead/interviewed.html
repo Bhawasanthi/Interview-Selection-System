@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Interviewed Students', 'sectionhead', 'interviewed', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>Interviewed Students</h1>
+            <p>Students whose interview marks have been recorded, ranked by total score.</p>
+        </div>
+        <div class="actions">
+            <a th:href="@{/sectionhead/cutoff}" class="btn btn-maroon">
+                <i class="fa-solid fa-calculator"></i> Cutoff Calculation
+            </a>
+        </div>
+    </div>
+
+
+    <div class="card-gov">
+
+        <div class="toolbar">
+            <div class="search-box">
+                <label class="form-label" for="ivSearch">Search</label>
+                <div class="position-relative">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" class="form-control" id="ivSearch" data-filter-search="#ivTable"
+                           placeholder="Name or index number">
+                </div>
+            </div>
+            <div class="filter">
+                <label class="form-label" for="ivStatus">Status</label>
+                <select class="form-select" id="ivStatus" data-filter-status="#ivTable">
+                    <option value="">All</option>
+                    <option value="INTERVIEWED">Interviewed</option>
+                    <option value="SELECTED">Selected</option>
+                    <option value="NOT_SELECTED">Not Selected</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-scroll" th:if="${!#lists.isEmpty(interviewed)}">
+            <table class="table-gov table-stack" id="ivTable">
+                <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Student</th>
+                    <th>Interviewed On</th>
+                    <th>Panel Member</th>
+                    <th class="num">Total Score</th>
+                    <th>Status</th>
+                    <th class="actions-col">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="app, it : ${interviewed}" th:attr="data-status=${app.status}"
+                    th:with="iv=${interviewByApp.get(app.applicationId)}">
+                    <td class="rank" data-label="Rank" th:text="${it.count}">1</td>
+                    <td class="cell-main">
+                        <strong th:text="${app.student.fullName}">Student</strong>
+                        <small th:text="${app.student.indexNumber}">index</small>
+                    </td>
+                    <td data-label="Interviewed On" th:text="${iv != null ? #temporals.format(iv.interviewDate, 'dd/MM/yyyy') : '-'}">Date</td>
+                    <td data-label="Panel Member" th:text="${iv != null ? iv.user.name : '-'}">Panel</td>
+                    <td class="num fw-bold" data-label="Total Score" th:text="${scores.get(app.applicationId)}">0</td>
+                    <td data-label="Status"><th:block th:replace="~{fragments/app :: status(${app.status})}"></th:block></td>
+                    <td class="actions-col">
+                        <a th:href="@{/sectionhead/applicant-detail/{id}(id=${app.applicationId})}" class="btn btn-sm btn-outline-maroon">View</a>
+                    </td>
+                </tr>
+                <tr class="filter-empty" hidden>
+                    <td colspan="7" class="text-center text-muted py-4">No students match your search.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <th:block th:if="${#lists.isEmpty(interviewed)}">
+            <div th:replace="~{fragments/app :: empty('fa-clipboard-check', 'No interviews marked yet',
+                'Students appear here once the interview panel has recorded their marks.')}"></div>
+        </th:block>
+
+    </div>
+
+</main>
+</body>
+</html>

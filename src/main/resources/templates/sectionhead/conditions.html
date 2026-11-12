@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Selection Conditions', 'sectionhead', 'conditions', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>Set Selection Conditions</h1>
+            <p>Define the minimum O/L grades required for applicants in your stream.</p>
+        </div>
+    </div>
+
+
+    <form class="card-gov accent" th:action="@{/sectionhead/conditions/save}" method="post" id="conditionsForm">
+
+        <div class="card-gov-body">
+
+            <div class="row g-3 mb-4">
+
+                <div class="col-md-6">
+                    <label class="form-label">Stream</label>
+                    <input type="text" class="form-control" th:value="${head.stream.streamName}" readonly disabled>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label required" for="year">Academic Year</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="year" name="year" th:value="${year}"
+                               min="2000" max="2100" required>
+                        <button type="button" class="btn btn-ghost" id="loadYear" title="Load the conditions saved for this year">
+                            <i class="fa-solid fa-rotate"></i> Load
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <h3 class="subhead">Selection Conditions</h3>
+
+            <div class="condition-head">
+                <span>Subject</span>
+                <span>Minimum Grade</span>
+                <span></span>
+            </div>
+
+            <div id="conditionsContainer">
+
+                <!-- Saved conditions -->
+                <div class="condition-row" th:each="c : ${conditions}">
+                    <select class="form-select" name="subjectName" aria-label="Subject" required>
+                        <option value="">Select subject</option>
+                        <option th:each="s : ${olSubjects}" th:value="${s}" th:text="${s}" th:selected="${s == c.subjectName}"></option>
+                    </select>
+                    <select class="form-select" name="minGrade" aria-label="Minimum grade" required>
+                        <option th:each="g : ${grades}" th:value="${g}" th:text="${g}" th:selected="${g == c.minGrade}"></option>
+                    </select>
+                    <button type="button" class="btn btn-danger-soft remove-condition" aria-label="Remove condition">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+
+            </div>
+
+
+            <!-- Template for new rows -->
+            <template id="conditionTemplate">
+                <div class="condition-row">
+                    <select class="form-select" name="subjectName" aria-label="Subject" required>
+                        <option value="">Select subject</option>
+                        <option th:each="s : ${olSubjects}" th:value="${s}" th:text="${s}"></option>
+                    </select>
+                    <select class="form-select" name="minGrade" aria-label="Minimum grade" required>
+                        <option th:each="g : ${grades}" th:value="${g}" th:text="${g}"></option>
+                    </select>
+                    <button type="button" class="btn btn-danger-soft remove-condition" aria-label="Remove condition">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </template>
+
+
+            <div class="text-muted small py-3" id="noConditions" th:classappend="${!#lists.isEmpty(conditions)} ? 'd-none'">
+                No conditions set for this year. Add at least one condition, e.g. Mathematics &ndash; A.
+            </div>
+
+            <button type="button" class="btn btn-outline-maroon mt-3" id="addConditionBtn">
+                <i class="fa-solid fa-plus"></i> Add Condition
+            </button>
+
+        </div>
+
+
+        <div class="card-gov-footer">
+            <a th:href="@{/sectionhead/auto-selection(year=${year})}" class="btn btn-ghost">
+                Go to Auto Selection <i class="fa-solid fa-arrow-right"></i>
+            </a>
+            <button type="submit" class="btn btn-maroon">
+                <i class="fa-solid fa-floppy-disk"></i> Save Conditions
+            </button>
+        </div>
+
+    </form>
+
+
+    <div class="alert alert-info">
+        <i class="fa-solid fa-circle-info me-1"></i>
+        A student is shortlisted only if <strong>every</strong> condition is met. Grades rank A &gt; B &gt; C &gt; S &gt; W.
+    </div>
+
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var container = document.getElementById("conditionsContainer");
+        var template = document.getElementById("conditionTemplate");
+        var empty = document.getElementById("noConditions");
+
+        function refresh() {
+            empty.classList.toggle("d-none", container.children.length > 0);
+        }
+
+        document.getElementById("addConditionBtn").addEventListener("click", function () {
+            container.appendChild(template.content.cloneNode(true));
+            container.lastElementChild.querySelector("select").focus();
+            refresh();
+        });
+
+        container.addEventListener("click", function (e) {
+            var btn = e.target.closest(".remove-condition");
+            if (btn) {
+                btn.closest(".condition-row").remove();
+                refresh();
+            }
+        });
+
+        document.getElementById("loadYear").addEventListener("click", function () {
+            window.location = "?year=" + encodeURIComponent(document.getElementById("year").value);
+        });
+
+        // Start with one empty row when nothing is saved yet
+        if (container.children.length === 0) {
+            container.appendChild(template.content.cloneNode(true));
+            refresh();
+        }
+    });
+    </script>
+
+</main>
+</body>
+</html>

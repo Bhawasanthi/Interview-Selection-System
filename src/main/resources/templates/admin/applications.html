@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Applications', 'admin', 'applications', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>Applications</h1>
+            <p>All A/L admission applications across every stream.</p>
+        </div>
+        <div class="actions">
+            <a class="btn btn-ghost" th:href="@{/admin/export-applications(q=${q}, status=${status}, stream=${stream})}">
+                <i class="fa-solid fa-file-excel"></i> Download Excel
+            </a>
+            <a class="btn btn-ghost" th:href="@{/admin/export-applications(q=${q}, status=${status}, stream=${stream}, format='pdf')}">
+                <i class="fa-solid fa-file-pdf"></i> Download PDF
+            </a>
+        </div>
+    </div>
+
+
+    <div class="card-gov">
+
+        <form class="toolbar" method="get" th:action="@{/admin/applications}" role="search">
+
+            <div class="search-box">
+                <label class="form-label" for="q">Search</label>
+                <div class="position-relative">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" class="form-control" id="q" name="q" th:value="${q}"
+                           placeholder="Name, email, index or NIC number">
+                </div>
+            </div>
+
+            <div class="filter">
+                <label class="form-label" for="stream">Stream</label>
+                <select class="form-select" id="stream" name="stream">
+                    <option value="">All</option>
+                    <option th:each="s : ${streams}" th:value="${s.streamId}" th:text="${s.streamName}"
+                            th:selected="${stream != null and s.streamId == stream}"></option>
+                </select>
+            </div>
+
+            <div class="filter">
+                <label class="form-label" for="status">Status</label>
+                <select class="form-select" id="status" name="status">
+                    <th:block th:replace="~{fragments/app :: statusOptions(${statuses}, ${status})}"></th:block>
+                </select>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-maroon" data-no-loading>
+                    <i class="fa-solid fa-filter"></i> Apply
+                </button>
+                <a th:if="${q != null or status != null or stream != null}" th:href="@{/admin/applications}" class="btn btn-ghost">Clear</a>
+            </div>
+
+        </form>
+
+        <div class="result-count"><strong th:text="${#lists.size(applications)}">0</strong> applications</div>
+
+        <div class="table-scroll" th:if="${!#lists.isEmpty(applications)}">
+            <table class="table-gov table-stack">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Student</th>
+                    <th>Stream</th>
+                    <th>School</th>
+                    <th>Subjects</th>
+                    <th>Applied</th>
+                    <th>Status</th>
+                    <th class="actions-col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="app : ${applications}">
+                    <td class="rank no-label" th:text="${app.applicationId}">1</td>
+                    <td class="cell-main">
+                        <strong th:text="${app.student.fullName}">Student</strong>
+                        <small th:text="${app.student.indexNumber}">index</small>
+                    </td>
+                    <td data-label="Stream" th:text="${app.stream.streamName}">Stream</td>
+                    <td data-label="School" th:text="${app.school.schoolName}">School</td>
+                    <td data-label="Subjects" class="small"
+                        th:text="${app.desiredSubject1} + ', ' + ${app.desiredSubject2} + ', ' + ${app.desiredSubject3}">Subjects</td>
+                    <td data-label="Applied" th:text="${#temporals.format(app.applicationDate, 'dd/MM/yyyy')}">Date</td>
+                    <td data-label="Status"><th:block th:replace="~{fragments/app :: status(${app.status})}"></th:block></td>
+                    <td class="actions-col">
+                        <a th:href="@{/admin/students/{id}(id=${app.student.studentId})}" class="btn btn-sm btn-outline-maroon">View</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <th:block th:if="${#lists.isEmpty(applications)}">
+            <div th:replace="~{fragments/app :: empty('fa-file-lines', 'No applications found', 'Try a different search or filter.')}"></div>
+        </th:block>
+
+    </div>
+
+</main>
+</body>
+</html>

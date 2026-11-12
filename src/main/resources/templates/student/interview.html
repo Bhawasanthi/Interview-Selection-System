@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Interview Details', 'student', 'interview', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>Interview Details</h1>
+            <p>Your interview date, time and venue, and what to bring.</p>
+        </div>
+        <div class="actions" th:if="${interview != null}">
+            <th:block th:replace="~{fragments/app :: status(${interview.status})}"></th:block>
+        </div>
+    </div>
+
+
+    <th:block th:if="${interview == null}">
+        <div class="card-gov">
+            <div th:replace="~{fragments/app :: empty('fa-calendar', 'No interview scheduled yet',
+                'If you are shortlisted, your interview date, time and venue will appear here.')}"></div>
+        </div>
+    </th:block>
+
+
+    <th:block th:if="${interview != null}">
+
+        <div class="row g-3 mb-4">
+
+            <div class="col-md-4">
+                <div class="info-tile">
+                    <i class="fa-solid fa-calendar-day"></i>
+                    <div>
+                        <small>Interview Date</small>
+                        <strong th:text="${#temporals.format(interview.interviewDate, 'EEEE, dd MMMM yyyy')}">Date</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="info-tile">
+                    <i class="fa-solid fa-clock"></i>
+                    <div>
+                        <small>Interview Time</small>
+                        <strong th:text="${#temporals.format(interview.interviewDate, 'hh:mm a')}">09:00 AM</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="info-tile">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <div>
+                        <small>Venue</small>
+                        <strong th:text="${interview.venue}">Venue</strong>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            <div class="col-lg-6">
+                <div class="card-gov h-100 mb-0">
+                    <div class="card-gov-header">
+                        <h2><i class="fa-solid fa-folder-open"></i> Documents to be brought</h2>
+                    </div>
+                    <div class="card-gov-body">
+                        <ul class="check-list">
+                            <li><i class="fa-solid fa-check"></i> Original Birth Certificate and a certified photocopy.</li>
+                            <li><i class="fa-solid fa-check"></i> Original G.C.E. Ordinary Level (O/L) Result Certificate and a photocopy.</li>
+                            <li><i class="fa-solid fa-check"></i> School Leaving Certificate / Character Certificate, if applicable.</li>
+                            <li><i class="fa-solid fa-check"></i> Certificates of extracurricular activities and other qualifications, if applicable.</li>
+                            <li><i class="fa-solid fa-check"></i> Any other documents relevant to the admission process.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card-gov h-100 mb-0">
+                    <div class="card-gov-header">
+                        <h2><i class="fa-solid fa-circle-exclamation"></i> Important Instructions</h2>
+                    </div>
+                    <div class="card-gov-body">
+                        <ul class="check-list">
+                            <li><i class="fa-solid fa-check"></i> The student should arrive at least 15 minutes before the scheduled interview time.</li>
+                            <li><i class="fa-solid fa-check"></i> The student should be dressed in appropriate school attire.</li>
+                            <li><i class="fa-solid fa-check"></i> The student must attend the interview with a parent / guardian.</li>
+                            <li><i class="fa-solid fa-check"></i> Please bring all required original documents for verification.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </th:block>
+
+</main>
+</body>
+</html>

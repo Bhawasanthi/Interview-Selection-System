@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Interview Results', 'panel', 'results', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>Interview Results</h1>
+            <p>Marks recorded for every completed interview in your stream, highest first.</p>
+        </div>
+    </div>
+
+
+    <div class="card-gov">
+
+        <div class="toolbar" th:if="${!#lists.isEmpty(interviews)}">
+            <div class="search-box">
+                <label class="form-label" for="resSearch">Search</label>
+                <div class="position-relative">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" class="form-control" id="resSearch" data-filter-search="#resultsTable" placeholder="Student name">
+                </div>
+            </div>
+        </div>
+
+        <div class="table-scroll" th:if="${!#lists.isEmpty(interviews)}">
+            <table class="table-gov table-stack" id="resultsTable">
+                <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Student</th>
+                    <th class="num">O/L Results</th>
+                    <th class="num">GN Approval</th>
+                    <th class="num">A/L Available</th>
+                    <th class="num">1 Subject</th>
+                    <th class="num">2 Subjects</th>
+                    <th class="num">Extra-Curricular</th>
+                    <th class="num">Interview</th>
+                    <th class="num">Documents</th>
+                    <th class="num">Total</th>
+                    <th class="actions-col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="i, it : ${interviews}" th:with="m=${breakdown.get(i.interviewId)}">
+                    <td class="rank" data-label="Rank" th:text="${it.count}">1</td>
+                    <td class="cell-main">
+                        <strong th:text="${i.application.student.fullName}">Student</strong>
+                        <small th:text="${#temporals.format(i.interviewDate, 'dd/MM/yyyy')}">date</small>
+                    </td>
+                    <td class="num" data-label="O/L Results" th:text="${m.getOrDefault('OL_RESULT', 0)}">0</td>
+                    <td class="num" data-label="GN Approval" th:text="${m.getOrDefault('GN_APPROVAL', 0)}">0</td>
+                    <td class="num" data-label="A/L Available" th:text="${m.getOrDefault('AL_AVAILABLE', 0)}">0</td>
+                    <td class="num" data-label="1 Subject" th:text="${m.getOrDefault('ONE_SUBJECT_AVAILABLE', 0)}">0</td>
+                    <td class="num" data-label="2 Subjects" th:text="${m.getOrDefault('TWO_SUBJECT_AVAILABLE', 0)}">0</td>
+                    <td class="num" data-label="Extra-Curricular" th:text="${m.getOrDefault('EXTRACURRICULAR', 0)}">0</td>
+                    <td class="num" data-label="Interview" th:text="${m.getOrDefault('INTERVIEW_ASSESSMENT', 0)}">0</td>
+                    <td class="num" data-label="Documents" th:text="${m.getOrDefault('DOCUMENTS_ELIGIBILITY', 0)}">0</td>
+                    <td class="num fw-bold" data-label="Total" th:text="${totals.get(i.interviewId)}">0</td>
+                    <td class="actions-col">
+                        <a th:href="@{/panel/student/{id}(id=${i.interviewId})}" class="btn btn-sm btn-outline-maroon">View</a>
+                    </td>
+                </tr>
+                <tr class="filter-empty" hidden>
+                    <td colspan="12" class="text-center text-muted py-4">No results match your search.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <th:block th:if="${#lists.isEmpty(interviews)}">
+            <div th:replace="~{fragments/app :: empty('fa-square-poll-vertical', 'No results yet',
+                'Results appear here after you mark an interview.')}"></div>
+        </th:block>
+
+    </div>
+
+</main>
+</body>
+</html>

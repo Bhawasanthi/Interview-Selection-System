@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Interview Marking', 'panel', 'marking', ~{::main})}">
+<body>
+<main>
+
+    <a th:href="@{/panel/marking}" class="back-link">
+        <i class="fa-solid fa-arrow-left"></i> Back to Interview Marking
+    </a>
+
+    <div class="page-head">
+        <div>
+            <h1 th:text="${student.fullName}">Student</h1>
+            <p>
+                Application Review &middot;
+                <span th:text="${#temporals.format(interview.interviewDate, 'dd/MM/yyyy hh:mm a')}">date</span> &middot;
+                <span th:text="${interview.venue}">venue</span>
+            </p>
+        </div>
+        <div class="actions">
+            <th:block th:replace="~{fragments/app :: status(${interview.status})}"></th:block>
+        </div>
+    </div>
+
+
+    <div class="row g-4">
+
+        <!-- APPLICANT SUMMARY -->
+
+        <div class="col-xl-5">
+
+            <div class="card-gov">
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-user"></i> Applicant</h2>
+                    <a th:href="@{/panel/student/{id}(id=${interview.interviewId})}" class="btn btn-sm btn-ghost">Full Details</a>
+                </div>
+                <div class="card-gov-body">
+                    <dl class="detail-list">
+                        <div><dt>NIC</dt><dd th:text="${student.nic}"></dd></div>
+                        <div><dt>O/L Index Number</dt><dd th:text="${student.indexNumber}"></dd></div>
+                        <div><dt>District</dt><dd th:text="${student.district}"></dd></div>
+                        <div><dt>School Applied To</dt><dd th:text="${app.school != null ? app.school.schoolName : 'Not set'}"></dd></div>
+                        <div><dt>Desired Stream</dt><dd th:text="${app.stream != null ? app.stream.streamName : 'Not set'}"></dd></div>
+                        <div class="span-all">
+                            <dt>Desired Subjects</dt>
+                            <dd class="subject-chips mt-1">
+                                <span class="subject-chip" th:text="${app.desiredSubject1}"></span>
+                                <span class="subject-chip" th:text="${app.desiredSubject2}"></span>
+                                <span class="subject-chip" th:text="${app.desiredSubject3}"></span>
+                            </dd>
+                        </div>
+                        <div class="span-all">
+                            <dt>Extra-Curricular Activities</dt>
+                            <dd th:text="${#strings.isEmpty(student.extraCurricularActivities) ? '-' : student.extraCurricularActivities}"></dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card-gov">
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-graduation-cap"></i> O/L Results</h2>
+                </div>
+                <div class="table-scroll">
+                    <table class="table-gov">
+                        <tbody>
+                        <tr th:each="r : ${olResults}">
+                            <td th:text="${r.subjectName}">Subject</td>
+                            <td class="text-end"><span class="grade-pill" th:classappend="'g-' + ${r.grade}" th:text="${r.grade}">A</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- MARKING FORM -->
+
+        <div class="col-xl-7">
+
+            <form class="card-gov accent"
+                  th:action="@{/panel/interview/{id}/submit-marks(id=${interview.interviewId})}" method="post"
+                  data-confirm="Save these interview marks? The student's status will change to Interviewed."
+                  data-confirm-title="Confirm &amp; Save Marks"
+                  data-confirm-ok="Save Marks">
+
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-pen-to-square"></i> Interview Marking</h2>
+                    <small th:if="${scaleYear != null}" th:text="'Marking scale: ' + ${scaleYear}">Marking scale: 2026</small>
+                </div>
+
+                <div class="card-gov-body">
+
+                    <div class="alert alert-warning" th:if="${scaleYear == null}">
+                        <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                        No marking scale has been set up yet, so marks cannot be calculated. Ask the administrator to set it in
+                        System Settings &gt; Marking Scale.
+                    </div>
+
+                    <h3 class="subhead">O/L Result Count (verify against original certificate)</h3>
+
+                    <div class="grade-counts mb-2">
+                        <div>
+                            <label class="form-label text-center d-block" for="countA">A</label>
+                            <input type="number" class="form-control" id="countA" name="countA" min="0" th:max="${olSubjectCount}"
+                                   th:value="${gradeCounts.getOrDefault('A', 0L)}" required>
+                        </div>
+                        <div>
+                            <label class="form-label text-center d-block" for="countB">B</label>
+                            <input type="number" class="form-control" id="countB" name="countB" min="0" th:max="${olSubjectCount}"
+                                   th:value="${gradeCounts.getOrDefault('B', 0L)}" required>
+                        </div>
+                        <div>
+                            <label class="form-label text-center d-block" for="countC">C</label>
+                            <input type="number" class="form-control" id="countC" name="countC" min="0" th:max="${olSubjectCount}"
+                                   th:value="${gradeCounts.getOrDefault('C', 0L)}" required>
+                        </div>
+                        <div>
+                            <label class="form-label text-center d-block" for="countS">S</label>
+                            <input type="number" class="form-control" id="countS" name="countS" min="0" th:max="${olSubjectCount}"
+                                   th:value="${gradeCounts.getOrDefault('S', 0L)}" required>
+                        </div>
+                        <div>
+                            <label class="form-label text-center d-block" for="countW">W</label>
+                            <input type="number" class="form-control" id="countW" name="countW" min="0" th:max="${olSubjectCount}"
+                                   th:value="${gradeCounts.getOrDefault('W', 0L)}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-text mb-4" id="gradeHint">Pre-filled from the results the student submitted. Correct any differences from the certificate.</div>
+
+
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label class="form-label required" for="interviewAssessment">
+                                Interview Assessment <span class="text-muted fw-normal" th:text="'(out of ' + ${#numbers.formatDecimal(assessmentMax, 1, 'POINT', 1, 'POINT')} + ')'">(out of 10)</span>
+                            </label>
+                            <input type="number" class="form-control" id="interviewAssessment" name="interviewAssessment"
+                                   min="0" th:max="${assessmentMax}" step="0.5" required placeholder="0">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label required" for="documentsEligibility">
+                                Supporting Documents &amp; Eligibility <span class="text-muted fw-normal" th:text="'(out of ' + ${#numbers.formatDecimal(documentsMax, 1, 'POINT', 1, 'POINT')} + ')'">(out of 5)</span>
+                            </label>
+                            <input type="number" class="form-control" id="documentsEligibility" name="documentsEligibility"
+                                   min="0" th:max="${documentsMax}" step="0.5" required placeholder="0">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label required" for="gnApproval">GN Approval</label>
+                            <select class="form-select" id="gnApproval" name="gnApproval" required>
+                                <option value="DIVISION">Division</option>
+                                <option value="REGION">Region</option>
+                                <option value="DISTRICT">District</option>
+                                <option value="PROVINCE">Province</option>
+                                <option value="OUT_OF_PROVINCE">Out of Province</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label required" for="extracurricular">Extra-Curricular Level</label>
+                            <select class="form-select" id="extracurricular" name="extracurricular" required>
+                                <option value="ALL_ISLAND" th:selected="${extracurricularLevel == 'ALL_ISLAND'}">All Island</option>
+                                <option value="PROVINCIAL" th:selected="${extracurricularLevel == 'PROVINCIAL'}">Provincial</option>
+                                <option value="INTERNATIONAL" th:selected="${extracurricularLevel == 'INTERNATIONAL'}">International</option>
+                                <option value="NONE" th:selected="${extracurricularLevel == 'NONE'}">None</option>
+                            </select>
+                            <div class="form-text">Pre-selected from the application. Verify against the certificates.</div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label required" for="alAvailable">A/L Available at O/L School?</label>
+                            <select class="form-select" id="alAvailable" name="alAvailable" required>
+                                <option value="YES">Available</option>
+                                <option value="NO">Not Available</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label required" for="oneSubjectAvailable">One Applied A/L Subject Available at O/L School?</label>
+                            <select class="form-select" id="oneSubjectAvailable" name="oneSubjectAvailable" required>
+                                <option value="YES">Available</option>
+                                <option value="NO">Not Available</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label required" for="twoSubjectAvailable">Two Applied A/L Subjects Available at O/L School?</label>
+                            <select class="form-select" id="twoSubjectAvailable" name="twoSubjectAvailable" required>
+                                <option value="YES">Available</option>
+                                <option value="NO">Not Available</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-text" id="alHint" hidden>
+                                <i class="fa-solid fa-circle-info"></i>
+                                A/L is not available at the O/L school, so the applied subjects are marked as not available too.
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="card-gov-footer">
+                    <a th:href="@{/panel/marking}" class="btn btn-ghost">Cancel</a>
+                    <button type="submit" class="btn btn-maroon" th:disabled="${scaleYear == null}">
+                        <i class="fa-solid fa-check"></i> Confirm &amp; Save Marks
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+
+        // A/L not available at the O/L school => neither applied subject can be available
+        var al = document.getElementById("alAvailable");
+        var dependents = [document.getElementById("oneSubjectAvailable"), document.getElementById("twoSubjectAvailable")];
+        var hint = document.getElementById("alHint");
+
+        function syncAvailability() {
+            var notAvailable = al.value === "NO";
+            dependents.forEach(function (select) {
+                if (notAvailable) select.value = "NO";
+                select.disabled = notAvailable;   // disabled selects are not submitted; the server records them as "NO"
+            });
+            hint.hidden = !notAvailable;
+        }
+        al.addEventListener("change", syncAvailability);
+        syncAvailability();
+
+        // The grade counts cannot add up to more than the number of O/L subjects
+        var max = /*[[${olSubjectCount}]]*/ 9;
+        var counts = ["countA", "countB", "countC", "countS", "countW"].map(function (id) { return document.getElementById(id); });
+        function checkCounts() {
+            var total = counts.reduce(function (sum, input) { return sum + (parseInt(input.value, 10) || 0); }, 0);
+            counts[0].setCustomValidity(total > max ? "The grade counts add up to " + total + ", but there are only " + max + " O/L subjects." : "");
+        }
+        counts.forEach(function (input) { input.addEventListener("input", checkCounts); });
+        checkCounts();
+    });
+    </script>
+
+</main>
+</body>
+</html>

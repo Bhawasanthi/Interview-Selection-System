@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Interview Marking', 'panel', 'marking', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>Interview Marking</h1>
+            <p>Select a student to verify their documents and record interview marks.</p>
+        </div>
+    </div>
+
+
+    <div class="card-gov">
+
+        <div class="table-scroll" th:if="${!#lists.isEmpty(interviews)}">
+            <table class="table-gov table-stack">
+                <thead>
+                <tr><th>Student</th><th>Date</th><th>Time</th><th>Venue</th><th>Status</th><th class="actions-col"></th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="i : ${interviews}">
+                    <td class="cell-main">
+                        <strong th:text="${i.application.student.fullName}">Student</strong>
+                        <small th:text="${i.application.student.indexNumber}">index</small>
+                    </td>
+                    <td data-label="Date" th:text="${#temporals.format(i.interviewDate, 'dd/MM/yyyy')}">Date</td>
+                    <td data-label="Time" th:text="${#temporals.format(i.interviewDate, 'hh:mm a')}">Time</td>
+                    <td data-label="Venue" th:text="${i.venue}">Venue</td>
+                    <td data-label="Status"><th:block th:replace="~{fragments/app :: status(${i.status})}"></th:block></td>
+                    <td class="actions-col">
+                        <a th:href="@{/panel/interview/{id}(id=${i.interviewId})}" class="btn btn-sm btn-maroon">
+                            <i class="fa-solid fa-pen-to-square"></i> Mark Interview
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <th:block th:if="${#lists.isEmpty(interviews)}">
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fa-solid fa-circle-check"></i></div>
+                <h3>No interviews waiting for marks</h3>
+                <p>Every scheduled interview in your stream has been marked.</p>
+                <a th:href="@{/panel/results}" class="btn btn-ghost">View Interview Results</a>
+            </div>
+        </th:block>
+
+    </div>
+
+</main>
+</body>
+</html>

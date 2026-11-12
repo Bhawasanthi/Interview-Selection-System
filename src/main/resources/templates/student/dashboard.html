@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Dashboard', 'student', 'dashboard', ~{::main})}">
+<body>
+<main>
+
+    <!-- WELCOME -->
+
+    <section class="welcome">
+        <div class="eyebrow">Student Portal</div>
+        <h1>Welcome, <span th:text="${student.fullName ?: student.username}">Student Name</span></h1>
+        <p th:if="${app == null}">Start by completing your A/L application form.</p>
+        <p th:if="${app != null}">
+            Your application for the
+            <strong th:text="${app.stream.streamName}">Stream</strong> stream at
+            <strong th:text="${app.school.schoolName}">School</strong>.
+        </p>
+    </section>
+
+
+    <!-- SELECTED -->
+
+    <div class="result-banner selected mb-4" th:if="${app != null and app.status == 'SELECTED'}">
+        <div class="big-icon"><i class="fa-solid fa-award"></i></div>
+        <div class="flex-grow-1">
+            <h2>Congratulations! You have been selected.</h2>
+            <p th:if="${admissionReady}">Your admission letter with the date, time and venue is ready.</p>
+            <p th:unless="${admissionReady}">The admission date, time and venue will be announced soon.</p>
+        </div>
+        <a th:href="@{/student/result}" class="btn btn-maroon text-nowrap">
+            <i class="fa-solid fa-envelope-open-text"></i> View Admission Letter
+        </a>
+    </div>
+
+
+    <!-- NO APPLICATION YET -->
+
+    <div class="card-gov accent" th:if="${app == null}">
+        <div class="empty-state">
+            <div class="empty-icon"><i class="fa-solid fa-file-pen"></i></div>
+            <h3>You have not submitted an application yet</h3>
+            <th:block th:if="${applicationsOpen != false}">
+                <p>Complete the Application for Admission to G.C.E (A/L) Class to be considered for selection.</p>
+                <p class="mt-2 fw-semibold" th:if="${applicationDeadline != null}">
+                    Applications close on <span th:text="${#temporals.format(applicationDeadline, 'dd/MM/yyyy')}">date</span>.
+                </p>
+                <a th:href="@{/student/application}" class="btn btn-maroon">
+                    <i class="fa-solid fa-file-pen"></i> Complete Application
+                </a>
+            </th:block>
+            <p th:if="${applicationsOpen == false}">Applications are closed. Please contact the school administration.</p>
+        </div>
+    </div>
+
+
+    <div class="row g-4">
+
+        <!-- APPLICATION STATUS -->
+
+        <div th:class="${app == null} ? 'col-12' : 'col-lg-5'">
+
+            <div class="card-gov h-100 mb-0">
+
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-list-ol"></i> Application Status</h2>
+                    <th:block th:if="${app != null}"><th:block th:replace="~{fragments/app :: status(${app.status})}"></th:block></th:block>
+                </div>
+
+                <div class="card-gov-body">
+
+                    <ol th:replace="~{fragments/app :: timeline(${steps})}"></ol>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- APPLICATION DETAILS -->
+
+        <div class="col-lg-7" th:if="${app != null}">
+
+            <div class="card-gov mb-4" th:if="${app != null}">
+
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-file-lines"></i> Application Details</h2>
+                    <a th:href="@{/student/application}" class="btn btn-sm btn-ghost">View Application</a>
+                </div>
+
+                <div class="card-gov-body">
+
+                    <dl class="detail-list">
+                        <div>
+                            <dt>Stream</dt>
+                            <dd th:text="${app.stream.streamName}">Mathematics</dd>
+                        </div>
+                        <div>
+                            <dt>School</dt>
+                            <dd th:text="${app.school.schoolName}">President College</dd>
+                        </div>
+                        <div class="span-all">
+                            <dt>Subjects</dt>
+                            <dd class="subject-chips mt-1">
+                                <span class="subject-chip" th:if="${app.desiredSubject1}">
+                                    <i class="fa-solid fa-book"></i><span th:text="${app.desiredSubject1}">Physics</span>
+                                </span>
+                                <span class="subject-chip" th:if="${app.desiredSubject2}">
+                                    <i class="fa-solid fa-book"></i><span th:text="${app.desiredSubject2}">Chemistry</span>
+                                </span>
+                                <span class="subject-chip" th:if="${app.desiredSubject3}">
+                                    <i class="fa-solid fa-book"></i><span th:text="${app.desiredSubject3}">Mathematics</span>
+                                </span>
+                            </dd>
+                        </div>
+                    </dl>
+
+                </div>
+
+            </div>
+
+
+            <!-- INTERVIEW -->
+
+            <div class="card-gov mb-0" th:if="${app != null}">
+
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-calendar-check"></i> Interview</h2>
+                    <a th:if="${interview != null}" th:href="@{/student/interview}" class="btn btn-sm btn-ghost">Details</a>
+                </div>
+
+                <div class="card-gov-body" th:if="${interview != null}">
+                    <div class="row g-3">
+                        <div class="col-sm-4">
+                            <div class="info-tile">
+                                <i class="fa-solid fa-calendar-day"></i>
+                                <div>
+                                    <small>Date</small>
+                                    <strong th:text="${#temporals.format(interview.interviewDate, 'dd/MM/yyyy')}">20/10/2026</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="info-tile">
+                                <i class="fa-solid fa-clock"></i>
+                                <div>
+                                    <small>Time</small>
+                                    <strong th:text="${#temporals.format(interview.interviewDate, 'hh:mm a')}">9:00 AM</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="info-tile">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <div>
+                                    <small>Venue</small>
+                                    <strong th:text="${interview.venue}">Hall A</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <th:block th:if="${interview == null}">
+                    <div th:replace="~{fragments/app :: empty('fa-calendar', 'No interview scheduled yet',
+                        'You will be notified here if you are shortlisted and invited to an interview.')}"></div>
+                </th:block>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+</body>
+</html>

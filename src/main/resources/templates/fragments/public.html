@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<!-- =====================================================
+     SHARED PUBLIC-SITE FRAGMENTS
+     Used by index, about, contact and schools so the
+     header, navigation, footer and login/sign-up modals
+     exist in exactly one place.
+===================================================== -->
+
+<head th:fragment="head(title)">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title th:text="${title}">Interview Selection System</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Serif:wght@600;700&display=swap"
+          rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <link rel="stylesheet" th:href="@{/css/public.css}">
+
+    <script>
+        document.documentElement.classList.add("js");
+    </script>
+
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     HEADER + NAVIGATION   (active = home | about | contact | schools)
+===================================================== -->
+
+<th:block th:fragment="header(active)">
+
+    <div class="gov-strip">
+
+        <div class="container d-flex justify-content-between align-items-center">
+
+            <span>
+                <i class="fa-solid fa-location-dot"></i>
+                Sri Lanka
+            </span>
+
+            <span id="todayDate"></span>
+
+        </div>
+
+    </div>
+
+    <div class="flag-bar"></div>
+
+
+    <nav class="navbar navbar-expand-lg main-nav" aria-label="Main navigation">
+
+        <div class="container">
+
+            <!-- CREST (links home) -->
+
+            <a th:href="@{/}" class="nav-crest order-0" aria-label="Home">
+                <i class="fa-solid fa-building-columns"></i>
+            </a>
+
+
+            <!-- LINKS -->
+
+            <div class="collapse navbar-collapse order-3 order-lg-1" id="mainNavLinks">
+
+                <div class="navbar-nav mx-lg-auto">
+
+                    <a th:href="@{/}"
+                       class="nav-link"
+                       th:classappend="${active == 'home'} ? 'active-page'"
+                       th:attr="aria-current=${active == 'home'} ? 'page'">
+                        <i class="fa-solid fa-house"></i> Home
+                    </a>
+
+                    <a th:href="@{/about}"
+                       class="nav-link"
+                       th:classappend="${active == 'about'} ? 'active-page'"
+                       th:attr="aria-current=${active == 'about'} ? 'page'">
+                        <i class="fa-solid fa-circle-info"></i> About
+                    </a>
+
+                    <a th:href="@{/contact}"
+                       class="nav-link"
+                       th:classappend="${active == 'contact'} ? 'active-page'"
+                       th:attr="aria-current=${active == 'contact'} ? 'page'">
+                        <i class="fa-solid fa-envelope"></i> Contact Us
+                    </a>
+
+                    <a th:href="@{/schools}"
+                       class="nav-link"
+                       th:classappend="${active == 'schools'} ? 'active-page'"
+                       th:attr="aria-current=${active == 'schools'} ? 'page'">
+                        <i class="fa-solid fa-school"></i> School
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- LOG IN / REGISTER (always visible) -->
+
+            <div class="nav-auth ms-auto order-1 order-lg-2" th:if="${me == null}">
+
+                <button type="button"
+                        class="btn btn-nav-login"
+                        data-bs-toggle="modal"
+                        data-bs-target="#loginModal">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span>Log In</span>
+                </button>
+
+                <button type="button"
+                        class="btn btn-gold"
+                        data-bs-toggle="modal"
+                        data-bs-target="#signupModal">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>Register</span>
+                </button>
+
+            </div>
+
+            <div class="nav-auth ms-auto order-1 order-lg-2" th:if="${me != null}">
+
+                <a th:href="@{${me.home()}}" class="btn btn-gold">
+                    <i class="fa-solid fa-gauge"></i>
+                    <span>My Dashboard</span>
+                </a>
+
+                <form th:action="@{/logout}" method="post" data-logout>
+                    <button type="submit" class="btn btn-nav-login">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Log Out</span>
+                    </button>
+                </form>
+
+            </div>
+
+
+            <!-- MOBILE MENU TOGGLE -->
+
+            <button class="navbar-toggler order-2 d-lg-none"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#mainNavLinks"
+                    aria-controls="mainNavLinks"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+        </div>
+
+    </nav>
+
+
+    <div class="site-notice-bar" th:if="${!#strings.isEmpty(siteNotice)}">
+        <div class="container">
+            <div class="site-notice" role="note">
+                <i class="fa-solid fa-bullhorn"></i>
+                <span th:text="${siteNotice}">Notice</span>
+            </div>
+        </div>
+    </div>
+
+</th:block>
+
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer class="site-footer" th:fragment="footer">
+
+    <div class="container">
+
+        <div class="row g-4">
+
+            <div class="col-md-6">
+
+                <h5>
+                    Interview Selection System
+                </h5>
+
+                <p>
+                    A digital platform for managing
+                    student applications, interviews
+                    and selection in an organized
+                    and transparent manner.
+                </p>
+
+            </div>
+
+
+            <div class="col-6 col-md-3">
+
+                <h6>
+                    Quick Links
+                </h6>
+
+                <p><a th:href="@{/}">Home</a></p>
+                <p><a th:href="@{/about}">About Us</a></p>
+                <p><a th:href="@{/contact}">Contact Us</a></p>
+                <p><a th:href="@{/schools}">School</a></p>
+
+            </div>
+
+
+            <div class="col-6 col-md-3">
+
+                <h6>
+                    Contact
+                </h6>
+
+                <p>
+                    <i class="fa-solid fa-location-dot"></i>
+                    Sri Lanka
+                </p>
+
+                <p>
+                    <i class="fa-solid fa-phone"></i>
+                    <a href="tel:+94472230202">+94 47 223 0202</a>
+                </p>
+
+                <p>
+                    <i class="fa-solid fa-envelope"></i>
+                    <a href="mailto:embpresidentcollege@gmail.com" class="text-break">embpresidentcollege@gmail.com</a>
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <hr class="footer-line">
+
+
+        <div class="text-center">
+
+            <small>
+                © 2026 Interview Selection System.
+                All Rights Reserved.
+            </small>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+
+<!-- =====================================================
+     LOGIN / SIGN-UP MODALS, LOGOUT TOAST AND SCRIPTS
+===================================================== -->
+
+<th:block th:fragment="modals">
+
+    <!-- LOGIN MODAL -->
+
+    <div class="modal fade auth-modal"
+         id="loginModal"
+         tabindex="-1"
+         aria-labelledby="loginModalTitle"
+         aria-hidden="true"
+         th:if="${me == null}">
+
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+
+            <div class="modal-content">
+
+                <div class="row g-0">
+
+                    <div class="col-md-5 modal-left login-side d-flex flex-column justify-content-center">
+
+                        <h3>
+                            Welcome Back
+                        </h3>
+
+                        <p>
+                            Log in to access your
+                            dashboard and application
+                            information.
+                        </p>
+
+                    </div>
+
+
+                    <div class="col-md-7 modal-right">
+
+                        <button type="button"
+                                class="btn-close float-end"
+                                data-bs-dismiss="modal"
+                                aria-label="Close">
+                        </button>
+
+                        <h4 class="mb-4" id="loginModalTitle">
+                            Log In
+                        </h4>
+
+                        <div th:if="${param.loginError != null and #strings.toString(param.loginError) == 'locked'}" class="alert alert-danger py-2">
+                            <i class="fa-solid fa-lock"></i>
+                            Too many unsuccessful login attempts. Please wait 15 minutes and try again,
+                            or use "Forgot password?".
+                        </div>
+                        <div th:if="${param.loginError != null and #strings.toString(param.loginError) != 'locked'}" class="alert alert-danger py-2">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            Invalid username or password.
+                        </div>
+
+                        <div th:if="${resetDone}" class="alert alert-success py-2">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span th:text="${resetDone}"></span>
+                        </div>
+
+                        <div th:if="${signupSuccess}" class="alert alert-success py-2">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span th:text="${signupSuccess}"></span>
+                        </div>
+
+
+                        <form th:action="@{/login}" method="post">
+
+                            <div class="mb-3">
+
+                                <label class="form-label" for="loginUsername">
+                                    Username
+                                </label>
+
+                                <input maxlength="50" type="text"
+                                       class="form-control"
+                                       id="loginUsername"
+                                       name="username"
+                                       autocomplete="username"
+                                       required>
+
+                            </div>
+
+
+                            <div class="mb-3">
+
+                                <label class="form-label" for="loginPassword">
+                                    Password
+                                </label>
+
+                                <input maxlength="100" type="password"
+                                       class="form-control"
+                                       id="loginPassword"
+                                       name="password"
+                                       autocomplete="current-password"
+                                       required>
+
+                            </div>
+
+
+                            <div class="form-check mb-3">
+
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="loginShowPassword"
+                                       data-toggle-password="loginPassword">
+
+                                <label class="form-check-label" for="loginShowPassword">
+                                    Show password
+                                </label>
+
+                            </div>
+
+
+                            <a href="#" class="d-block mb-3 small"
+                               data-bs-toggle="modal" data-bs-target="#forgotModal">
+                                Forgot password?
+                            </a>
+
+
+                            <button type="submit" class="btn btn-maroon w-100">
+
+                                <i class="fa-solid fa-right-to-bracket"></i>
+                                Log In
+
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- FORGOT PASSWORD MODAL -->
+
+    <div class="modal fade auth-modal"
+         id="forgotModal"
+         tabindex="-1"
+         aria-labelledby="forgotModalTitle"
+         aria-hidden="true"
+         th:if="${me == null}">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content">
+
+                <div class="modal-right">
+
+                    <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                    <div class="round-icon">
+                        <i class="fa-solid fa-key"></i>
+                    </div>
+
+                    <h4 class="mb-2 mt-3" id="forgotModalTitle">Reset Password</h4>
+
+                    <!-- LINK SENT -->
+
+                    <div th:if="${forgotSent}">
+                        <div class="alert alert-success">
+                            <i class="fa-solid fa-envelope-circle-check me-1"></i>
+                            <span th:text="${forgotSent}">sent</span>
+                        </div>
+                        <button type="button" class="btn btn-maroon w-100"
+                                data-bs-toggle="modal" data-bs-target="#loginModal">
+                            <i class="fa-solid fa-right-to-bracket"></i> Back to Log In
+                        </button>
+                    </div>
+
+
+                    <!-- REQUEST FORM -->
+
+                    <th:block th:unless="${forgotSent}">
+
+                        <p class="text-muted small mb-4">
+                            Enter the email address you registered with. We will send you a link to choose a new password.
+                            Staff members can enter their username.
+                        </p>
+
+                        <div th:if="${forgotError}" class="alert alert-danger py-2">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span th:text="${forgotError}"></span>
+                        </div>
+
+                        <form th:action="@{/forgot-password}" method="post">
+
+                            <div class="mb-3">
+                                <label class="form-label" for="forgotUser">Registered email address</label>
+                                <input type="text" class="form-control" id="forgotUser" name="usernameOrEmail"
+                                       placeholder="name@gmail.com" autocomplete="email" required
+                                       th:value="${forgotValue}"
+                                       th:classappend="${forgotError != null} ? 'is-invalid'">
+                            </div>
+
+                            <button type="submit" class="btn btn-maroon w-100">
+                                <i class="fa-solid fa-paper-plane"></i> Send Reset Link
+                            </button>
+
+                            <a href="#" class="d-block text-center mt-3 small"
+                               data-bs-toggle="modal" data-bs-target="#loginModal">
+                                Back to Log In
+                            </a>
+
+                        </form>
+
+                    </th:block>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- SIGN-UP MODAL -->
+
+    <div class="modal fade auth-modal"
+         id="signupModal"
+         tabindex="-1"
+         aria-labelledby="signupModalTitle"
+         aria-hidden="true"
+         th:if="${me == null}">
+
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+
+            <div class="modal-content">
+
+                <div class="row g-0">
+
+                    <div class="col-md-5 modal-left signup-side d-flex flex-column justify-content-center">
+
+                        <h3>
+                            Get Started
+                        </h3>
+
+                        <p>
+                            Create a student account
+                            to begin your application.
+                        </p>
+
+                    </div>
+
+
+                    <div class="col-md-7 modal-right">
+
+                        <button type="button"
+                                class="btn-close float-end"
+                                data-bs-dismiss="modal"
+                                aria-label="Close">
+                        </button>
+
+                        <h4 class="mb-4" id="signupModalTitle">
+                            Sign Up
+                        </h4>
+
+                        <div class="alert alert-warning py-2" th:if="${registrationOpen == false}">
+                            <i class="fa-solid fa-circle-info"></i>
+                            New student registration is currently closed.
+                        </div>
+
+                        <div th:if="${signupError}"
+                             class="alert alert-danger py-2"
+                             th:text="${signupError}">
+                        </div>
+
+                        <div id="signupClientError" class="alert alert-danger py-2 d-none">
+                            Passwords do not match.
+                        </div>
+
+
+                        <form th:action="@{/student-signup}" method="post" id="signupForm">
+
+                            <div class="mb-3">
+
+                                <label class="form-label" for="signupFullName">
+                                    Full Name
+                                </label>
+
+                                <input maxlength="150" type="text"
+                                       class="form-control"
+                                       id="signupFullName"
+                                       name="fullName"
+                                       autocomplete="name"
+                                       required>
+
+                            </div>
+
+
+                            <div class="mb-3">
+
+                                <label class="form-label" for="signupEmail">
+                                    Email
+                                </label>
+
+                                <input maxlength="150" type="email"
+                                       class="form-control"
+                                       id="signupEmail"
+                                       name="email"
+                                       autocomplete="email"
+                                       required>
+
+                            </div>
+
+
+                            <div class="mb-3">
+
+                                <label class="form-label" for="signupUsername">
+                                    Username
+                                </label>
+
+                                <input maxlength="50" type="text"
+                                       class="form-control"
+                                       id="signupUsername"
+                                       name="username"
+                                       autocomplete="username"
+                                       required>
+
+                            </div>
+
+
+                            <div class="row g-3 mb-3">
+
+                                <div class="col-sm-6">
+
+                                    <label class="form-label" for="signupPassword">
+                                        Password
+                                    </label>
+
+                                    <input maxlength="100" type="password"
+                                           class="form-control"
+                                           id="signupPassword"
+                                           name="password"
+                                           autocomplete="new-password"
+                                           required>
+
+                                </div>
+
+
+                                <div class="col-sm-6">
+
+                                    <label class="form-label" for="confirmPassword">
+                                        Confirm Password
+                                    </label>
+
+                                    <input maxlength="100" type="password"
+                                           class="form-control"
+                                           id="confirmPassword"
+                                           name="confirmPassword"
+                                           autocomplete="new-password"
+                                           required>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="form-check mb-3">
+
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="signupShowPassword"
+                                       data-toggle-password="signupPassword,confirmPassword">
+
+                                <label class="form-check-label" for="signupShowPassword">
+                                    Show password
+                                </label>
+
+                            </div>
+
+
+                            <button type="submit" class="btn btn-maroon w-100">
+
+                                <i class="fa-solid fa-user-plus"></i>
+                                Sign Up
+
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- LOGOUT TOAST -->
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+
+        <div id="logoutToast"
+             class="toast toast-gov"
+             role="status"
+             aria-live="polite"
+             aria-atomic="true">
+
+            <div class="toast-body d-flex align-items-center gap-2">
+
+                <i class="fa-solid fa-circle-check text-success"></i>
+
+                You have been logged out.
+
+                <button type="button"
+                        class="btn-close ms-auto"
+                        data-bs-dismiss="toast"
+                        aria-label="Close">
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script th:inline="javascript">
+        window.pageState = {
+            signupError: /*[[${signupError != null}]]*/ false,
+            forgotOpen: /*[[${forgotSent != null or forgotError != null}]]*/ false,
+            signupSuccess: /*[[${signupSuccess != null}]]*/ false
+        };
+    </script>
+
+    <script th:src="@{/js/public.js}"></script>
+    <script th:src="@{/js/logout.js}"></script>
+
+    <th:block th:if="${me != null}">
+        <div th:replace="~{fragments/app :: logoutModal}"></div>
+    </th:block>
+
+</th:block>
+
+</body>
+
+</html>

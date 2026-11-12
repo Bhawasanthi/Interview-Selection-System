@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Interview Invitations', 'sectionhead', 'invitations', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>Interview Invitations</h1>
+            <p>Schedule interviews for shortlisted students and notify their parents / guardians.</p>
+        </div>
+    </div>
+
+
+    <div class="alert alert-warning" th:if="${emailConfigured != true}">
+        <i class="fa-solid fa-triangle-exclamation me-1"></i>
+        Email is not set up yet, so letters will not be emailed. Ask the administrator to set up the school email in <strong>System Settings &rarr; Email</strong>. Everything is still shown to students in the Student Portal.
+    </div>
+
+
+
+
+    <div class="card-gov">
+
+        <div class="card-gov-header">
+            <h2><i class="fa-solid fa-calendar-days"></i> Upcoming Interviews</h2>
+            <span class="text-muted small"><strong th:text="${#lists.size(upcoming)}">0</strong> scheduled</span>
+        </div>
+
+        <div class="table-scroll" th:if="${!#lists.isEmpty(upcoming)}">
+            <table class="table-gov table-stack">
+                <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Venue</th>
+                    <th>Panel Member</th>
+                    <th class="actions-col">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="i : ${upcoming}">
+                    <td class="cell-main">
+                        <strong th:text="${i.application.student.fullName}">Student 01</strong>
+                        <small th:text="${i.application.student.indexNumber}">Index</small>
+                    </td>
+                    <td data-label="Date" th:text="${#temporals.format(i.interviewDate, 'dd/MM/yyyy')}">20/10/2026</td>
+                    <td data-label="Time" th:text="${#temporals.format(i.interviewDate, 'hh:mm a')}">9:00 AM</td>
+                    <td data-label="Venue" th:text="${i.venue}">Hall A</td>
+                    <td data-label="Panel Member" th:text="${i.user.name}">Panel</td>
+                    <td class="actions-col">
+                        <button type="button" class="btn btn-sm btn-ghost" data-bs-toggle="modal" data-bs-target="#rescheduleModal"
+                                data-fill
+                                th:attr="data-action=@{/sectionhead/invitations/{id}/update(id=${i.interviewId})},
+                                         data-heading='Change Interview - ' + ${i.application.student.fullName},
+                                         data-f-interview-date=${#temporals.format(i.interviewDate, 'yyyy-MM-dd')},
+                                         data-f-interview-time=${#temporals.format(i.interviewDate, 'HH:mm')},
+                                         data-f-venue=${i.venue}">
+                            <i class="fa-solid fa-pen"></i> Change
+                        </button>
+                        <form th:action="@{/sectionhead/invitations/{id}/cancel(id=${i.interviewId})}" method="post" class="d-inline"
+                              th:attr="data-confirm='Cancel the interview for ' + ${i.application.student.fullName} + '? The student will return to the shortlist.'"
+                              data-confirm-title="Cancel Interview"
+                              data-confirm-ok="Cancel Interview"
+                              data-confirm-danger="true">
+                            <button type="submit" class="btn btn-sm btn-danger-soft">
+                                <i class="fa-solid fa-xmark"></i> Cancel
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <th:block th:if="${#lists.isEmpty(upcoming)}">
+            <div th:replace="~{fragments/app :: empty('fa-calendar', 'No upcoming interviews', 'Interviews you schedule below will be listed here.')}"></div>
+        </th:block>
+
+    </div>
+
+
+
+
+    <div class="modal fade" id="rescheduleModal" tabindex="-1" aria-labelledby="rescheduleTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form class="modal-content" method="post" th:action="@{/sectionhead/invitations}">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rescheduleTitle" data-heading="Change Interview">Change Interview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label required" for="rsDate">Interview Date</label>
+                            <input type="date" class="form-control" id="rsDate" name="interviewDate"
+                                   th:min="${minInterviewDate}" th:max="${maxInterviewDate}" required>
+                            <div class="form-text">Must be a future date.</div>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label required" for="rsTime">Interview Time</label>
+                            <input type="time" class="form-control" id="rsTime" name="interviewTime" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label required" for="rsVenue">Venue</label>
+                            <input maxlength="150" type="text" class="form-control" id="rsVenue" name="venue" required>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="rsNotify" name="notify" value="yes" checked>
+                                <label class="form-check-label" for="rsNotify">
+                                    Email the updated interview letter to the student
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-maroon"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+
+
+
+    <form th:action="@{/sectionhead/send-invitations}" method="post" id="inviteForm"
+          data-confirm="Schedule interviews and send invitations to the selected students?"
+          data-confirm-title="Send Interview Invitations"
+          data-confirm-ok="Send Invitations">
+
+        <div class="row g-4">
+
+            <!-- STUDENTS + DETAILS -->
+
+            <div class="col-xl-6">
+
+                <div class="card-gov">
+
+                    <div class="card-gov-header">
+                        <h2><i class="fa-solid fa-users"></i> Select Students</h2>
+                        <span class="count-badge">
+                            Selected Applicants: <strong data-check-count="applicationIds">0</strong>
+                        </span>
+                    </div>
+
+                    <div class="card-gov-body" th:if="${!#lists.isEmpty(toInvite)}">
+
+                        <div class="d-flex flex-wrap gap-3 align-items-center mb-3">
+                            <div class="form-check mb-0">
+                                <input class="form-check-input" type="checkbox" id="checkAll" data-check-all="applicationIds">
+                                <label class="form-check-label fw-semibold" for="checkAll">Select all</label>
+                            </div>
+                            <div class="search-box ms-auto" style="flex-basis: 220px;">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="search" class="form-control form-control-sm" id="inviteSearch"
+                                       placeholder="Search students" aria-label="Search students">
+                            </div>
+                        </div>
+
+                        <div class="invite-list" id="inviteList">
+                            <label th:each="app : ${toInvite}">
+                                <input class="form-check-input" type="checkbox" name="applicationIds" th:value="${app.applicationId}">
+                                <span class="flex-grow-1">
+                                    <span class="fw-semibold d-block" th:text="${app.student.fullName}">Student</span>
+                                    <small class="text-muted" th:text="${app.student.indexNumber} + ' · ' + ${app.student.email}">index</small>
+                                </span>
+                            </label>
+                        </div>
+
+                    </div>
+
+                    <th:block th:if="${#lists.isEmpty(toInvite)}">
+                        <div class="empty-state">
+                            <div class="empty-icon"><i class="fa-solid fa-user-check"></i></div>
+                            <h3>No students waiting for an invitation</h3>
+                            <p>Every shortlisted student already has an interview, or no one has been shortlisted yet.</p>
+                            <a th:href="@{/sectionhead/auto-selection}" class="btn btn-ghost">Go to Auto Selection</a>
+                        </div>
+                    </th:block>
+
+                </div>
+
+
+                <div class="card-gov">
+
+                    <div class="card-gov-header">
+                        <h2><i class="fa-solid fa-calendar-plus"></i> Interview Details</h2>
+                    </div>
+
+                    <div class="card-gov-body">
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+                                <label class="form-label required" for="interviewDate">Interview Date</label>
+                                <input type="date" class="form-control" id="interviewDate" name="interviewDate"
+                                       th:min="${minInterviewDate}" th:max="${maxInterviewDate}"
+                                       data-letter-token="[Interview Date]" required>
+                                <div class="form-text">Must be a future date (tomorrow or later).</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label required" for="interviewTime">Interview Time</label>
+                                <input type="time" class="form-control" id="interviewTime" name="interviewTime"
+                                       th:value="${defaultTime ?: '09:00'}" data-letter-token="[Interview Time]" required>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label required" for="venue">Venue</label>
+                                <input maxlength="150" type="text" class="form-control" id="venue" name="venue"
+                                       placeholder="e.g. Main School Hall" th:value="${defaultVenue}"
+                                       data-letter-token="[Interview Venue]" required>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label" for="panelUserId">Assign Panel Member</label>
+                                <select class="form-select" id="panelUserId" name="panelUserId">
+                                    <option th:each="p : ${panelMembers}" th:value="${p.userId}" th:text="${p.name}">Panel</option>
+                                    <option th:if="${#lists.isEmpty(panelMembers)}" value="">No panel members - assign to me</option>
+                                </select>
+                                <div class="form-text">Every panel member of your stream can mark these interviews.</div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="card-gov-footer">
+                        <button type="submit" class="btn btn-maroon" data-requires-check="applicationIds">
+                            <i class="fa-solid fa-paper-plane"></i> Send Interview Invitations
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+
+            <div class="col-xl-6">
+
+                <div class="card-gov">
+                    <div class="card-gov-header">
+                        <h2><i class="fa-solid fa-envelope-open-text"></i> Message Preview</h2>
+                        <small>Student details are filled in automatically for each letter.</small>
+                    </div>
+                    <div class="card-gov-body">
+                        <div class="letter" data-letter-preview th:attr="data-letter-template=${letterTemplate}"
+                             th:text="${letterTemplate}">Letter</div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var search = document.getElementById("inviteSearch");
+        if (!search) return;
+        search.addEventListener("input", function () {
+            var q = search.value.trim().toLowerCase();
+            document.querySelectorAll("#inviteList label").forEach(function (row) {
+                row.hidden = q && row.textContent.toLowerCase().indexOf(q) === -1;
+            });
+        });
+    });
+    </script>
+
+</main>
+</body>
+</html>

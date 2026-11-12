@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Reports', 'admin', 'reports', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>Reports</h1>
+            <p>Admission statistics and downloadable lists.</p>
+        </div>
+        <div class="actions">
+            <div class="btn-group">
+                <a th:href="@{/admin/export-applications}" class="btn btn-ghost">
+                    <i class="fa-solid fa-file-excel"></i> All Applications
+                </a>
+                <a th:href="@{/admin/export-applications(format='pdf')}" class="btn btn-ghost" title="All Applications (PDF)">
+                    <i class="fa-solid fa-file-pdf"></i> PDF
+                </a>
+            </div>
+            <div class="btn-group">
+                <a th:href="@{/admin/export-selected}" class="btn btn-maroon">
+                    <i class="fa-solid fa-file-excel"></i> Selected Students
+                </a>
+                <a th:href="@{/admin/export-selected(format='pdf')}" class="btn btn-maroon" title="Selected Students (PDF)">
+                    <i class="fa-solid fa-file-pdf"></i> PDF
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row g-4">
+
+        <!-- STATUS BREAKDOWN -->
+
+        <div class="col-lg-5">
+
+            <div class="card-gov h-100 mb-0">
+
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-chart-pie"></i> Applications by Status</h2>
+                    <span class="small text-muted">Total <strong class="text-dark" th:text="${total}">0</strong></span>
+                </div>
+
+                <div class="card-gov-body">
+                    <div class="d-grid gap-3">
+                        <div th:each="entry : ${byStatus}">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <th:block th:replace="~{fragments/app :: status(${entry.key})}"></th:block>
+                                <span class="fw-bold" th:text="${entry.value}">0</span>
+                            </div>
+                            <div class="progress" style="height: 6px;" role="progressbar"
+                                 th:attr="aria-valuenow=${entry.value}, aria-valuemax=${total}">
+                                <div class="progress-bar" style="background: var(--maroon);"
+                                     th:style="'background: var(--maroon); width:' + (${total} > 0 ? ${entry.value} * 100 / ${total} : 0) + '%'"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- STREAM TABLE -->
+
+        <div class="col-lg-7">
+
+            <div class="card-gov h-100 mb-0">
+
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-layer-group"></i> Stream Summary</h2>
+                </div>
+
+                <div class="table-scroll">
+                    <table class="table-gov table-stack">
+                        <thead>
+                        <tr>
+                            <th>Stream</th>
+                            <th class="num">Applications</th>
+                            <th class="num">Shortlisted</th>
+                            <th class="num">Interviewed</th>
+                            <th class="num">Selected</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="row : ${streamRows}">
+                            <td class="cell-main"><strong th:text="${row.stream.streamName}">Stream</strong></td>
+                            <td class="num" data-label="Applications" th:text="${row.applications}">0</td>
+                            <td class="num" data-label="Shortlisted" th:text="${row.shortlisted}">0</td>
+                            <td class="num" data-label="Interviewed" th:text="${row.interviewed}">0</td>
+                            <td class="num fw-bold" data-label="Selected" th:text="${row.selected}">0</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SELECTED STUDENTS -->
+
+    <div class="card-gov mt-4">
+
+        <div class="card-gov-header">
+            <h2><i class="fa-solid fa-award"></i> Selected Students
+                <span class="status st-selected ms-1" th:text="${#lists.size(selected)}">0</span></h2>
+            <div class="d-flex gap-2" th:if="${!#lists.isEmpty(selected)}">
+                <a th:href="@{/admin/export-selected}" class="btn btn-sm btn-ghost">
+                    <i class="fa-solid fa-file-excel"></i> Excel
+                </a>
+                <a th:href="@{/admin/export-selected(format='pdf')}" class="btn btn-sm btn-ghost">
+                    <i class="fa-solid fa-file-pdf"></i> PDF
+                </a>
+            </div>
+        </div>
+
+        <div class="table-scroll" th:if="${!#lists.isEmpty(selected)}">
+            <table class="table-gov table-stack">
+                <thead>
+                <tr><th>Name</th><th>School</th><th>Stream</th><th>NIC</th><th>Index No.</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="app : ${selected}">
+                    <td class="cell-main"><strong th:text="${app.student.fullName}">Name</strong></td>
+                    <td data-label="School" th:text="${app.school.schoolName}">School</td>
+                    <td data-label="Stream" th:text="${app.stream.streamName}">Stream</td>
+                    <td data-label="NIC" th:text="${app.student.nic}">NIC</td>
+                    <td data-label="Index No." th:text="${app.student.indexNumber}">Index</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <th:block th:if="${#lists.isEmpty(selected)}">
+            <div th:replace="~{fragments/app :: empty('fa-award', 'No selected students yet',
+                'Selected students appear here after each section head runs the cutoff calculation.')}"></div>
+        </th:block>
+
+    </div>
+
+
+    <!-- EXPORT BY STATUS -->
+
+    <div class="card-gov">
+        <div class="card-gov-header">
+            <h2><i class="fa-solid fa-download"></i> Download by Status</h2>
+        </div>
+        <div class="card-gov-body d-flex flex-wrap gap-2">
+            <div class="btn-group" th:each="s : ${statuses}">
+                <a class="btn btn-sm btn-ghost" th:href="@{/admin/export-applications(status=${s})}">
+                    <i class="fa-solid fa-file-excel"></i>
+                    <th:block th:replace="~{fragments/app :: statusLabel(${s})}"></th:block>
+                </a>
+                <a class="btn btn-sm btn-ghost" th:href="@{/admin/export-applications(status=${s}, format='pdf')}"
+                   title="Download as PDF" aria-label="Download as PDF">
+                    <i class="fa-solid fa-file-pdf"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+</main>
+</body>
+</html>

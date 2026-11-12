@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Profile', 'admin', 'profile', ~{::main})}">
+<body>
+<main>
+    <th:block th:replace="~{fragments/app :: staffProfile('/admin/profile')}"></th:block>
+</main>
+</body>
+</html>

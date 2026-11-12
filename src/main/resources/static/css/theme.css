@@ -1,0 +1,356 @@
+/* =====================================================
+   INTERVIEW SELECTION SYSTEM - SHARED THEME
+   Colours, type, buttons, forms and status badges used
+   by both the public site and the staff/student workspaces.
+===================================================== */
+
+:root {
+    --maroon: #7b1e2e;
+    --maroon-dark: #5a1421;
+    --maroon-deep: #2e0a12;
+    --maroon-tint: #f6e9eb;
+    --gold: #d4a21c;
+    --gold-soft: #f4d67e;
+    --gold-tint: #fbf3dc;
+
+    --ink: #1e1e22;
+    --muted: #5b5f66;
+    --subtle: #8a8f98;
+    --paper: #f7f4ee;
+    --surface: #ffffff;
+    --line: #e6dfd2;
+    --line-strong: #d6ccba;
+
+    --font-body: "Noto Sans", "Segoe UI", Arial, sans-serif;
+    --font-head: "Noto Serif", Georgia, serif;
+
+    --radius: 8px;
+    --shadow-sm: 0 1px 3px rgba(46, 10, 18, 0.06);
+    --shadow-md: 0 10px 30px rgba(46, 10, 18, 0.10);
+
+    /* Status colours: one consistent set everywhere */
+    --st-pending-bg: #fdf3d8;       --st-pending-fg: #8a5a00;
+    --st-shortlisted-bg: #e3edfb;   --st-shortlisted-fg: #1d4f91;
+    --st-scheduled-bg: #ece6fa;     --st-scheduled-fg: #53349a;
+    --st-interviewed-bg: #dcf1f0;   --st-interviewed-fg: #0e6461;
+    --st-selected-bg: #e0f2e4;      --st-selected-fg: #1c6b33;
+    --st-notselected-bg: #f1e3e5;   --st-notselected-fg: #8c2332;
+    --st-neutral-bg: #eceae6;       --st-neutral-fg: #55575c;
+}
+
+body {
+    font-family: var(--font-body);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: var(--font-head);
+}
+
+a {
+    color: var(--maroon);
+}
+
+a:hover {
+    color: var(--maroon-dark);
+}
+
+.btn:focus-visible,
+a:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible {
+    outline: 3px solid var(--gold);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+
+/* =========================
+   BUTTONS
+========================= */
+
+.btn {
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+.btn-maroon {
+    background: var(--maroon);
+    border: 2px solid var(--maroon);
+    color: #fff;
+}
+
+.btn-maroon:hover,
+.btn-maroon:focus,
+.btn-maroon:active {
+    background: var(--maroon-dark) !important;
+    border-color: var(--maroon-dark) !important;
+    color: #fff !important;
+}
+
+.btn-outline-maroon {
+    background: transparent;
+    border: 2px solid var(--maroon);
+    color: var(--maroon);
+}
+
+.btn-outline-maroon:hover,
+.btn-outline-maroon:focus,
+.btn-outline-maroon:active {
+    background: var(--maroon) !important;
+    color: #fff !important;
+}
+
+.btn-gold {
+    background: var(--gold);
+    border: 2px solid var(--gold);
+    color: var(--maroon-deep);
+}
+
+.btn-gold:hover,
+.btn-gold:focus,
+.btn-gold:active {
+    background: var(--gold-soft) !important;
+    border-color: var(--gold-soft) !important;
+    color: var(--maroon-deep) !important;
+}
+
+.btn-ghost {
+    background: transparent;
+    border: 1px solid var(--line-strong);
+    color: var(--ink);
+}
+
+.btn-ghost:hover {
+    background: var(--paper);
+    border-color: var(--subtle);
+    color: var(--ink);
+}
+
+.btn-danger-soft {
+    background: #fbeaec;
+    border: 1px solid #efc3c9;
+    color: #8c2332;
+}
+
+.btn-danger-soft:hover {
+    background: #8c2332;
+    border-color: #8c2332;
+    color: #fff;
+}
+
+
+/* =========================
+   FORMS
+========================= */
+
+.form-label {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ink);
+    margin-bottom: 6px;
+}
+
+.form-control,
+.form-select {
+    border-color: var(--line-strong);
+    border-radius: 6px;
+    padding: 9px 12px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--maroon);
+    box-shadow: 0 0 0 0.2rem rgba(123, 30, 46, 0.15);
+}
+
+.form-check-input:checked {
+    background-color: var(--maroon);
+    border-color: var(--maroon);
+}
+
+.form-check-input:focus {
+    border-color: var(--maroon);
+    box-shadow: 0 0 0 0.2rem rgba(123, 30, 46, 0.15);
+}
+
+.form-text {
+    color: var(--muted);
+}
+
+.required::after {
+    content: " *";
+    color: var(--maroon);
+}
+
+
+/* =========================
+   STATUS BADGES
+========================= */
+
+.status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    background: var(--st-neutral-bg);
+    color: var(--st-neutral-fg);
+}
+
+.status::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.status.st-pending      { background: var(--st-pending-bg);     color: var(--st-pending-fg); }
+.status.st-shortlisted  { background: var(--st-shortlisted-bg); color: var(--st-shortlisted-fg); }
+.status.st-scheduled    { background: var(--st-scheduled-bg);   color: var(--st-scheduled-fg); }
+.status.st-interviewed  { background: var(--st-interviewed-bg); color: var(--st-interviewed-fg); }
+.status.st-selected     { background: var(--st-selected-bg);    color: var(--st-selected-fg); }
+.status.st-notselected  { background: var(--st-notselected-bg); color: var(--st-notselected-fg); }
+
+.status.status-lg {
+    font-size: 14px;
+    padding: 6px 14px;
+}
+
+
+/* =========================
+   ALERTS
+========================= */
+
+.alert {
+    border-radius: var(--radius);
+    border-width: 1px;
+    border-left-width: 4px;
+}
+
+.alert-success { border-left-color: #1c6b33; }
+.alert-danger  { border-left-color: #8c2332; }
+.alert-warning { border-left-color: #b07800; }
+.alert-info    { border-left-color: #1d4f91; }
+
+
+/* =========================
+   LETTER (notification preview)
+========================= */
+
+.letter {
+    background: #fffdf8;
+    border: 1px solid var(--line);
+    border-top: 5px solid var(--maroon);
+    border-radius: 4px;
+    padding: 28px 32px;
+    font-family: var(--font-head);
+    font-size: 15px;
+    line-height: 1.75;
+    color: #2a2a2e;
+    white-space: pre-wrap;
+    box-shadow: var(--shadow-sm);
+    max-height: 560px;
+    overflow: auto;
+}
+
+.letter mark {
+    background: var(--gold-tint);
+    color: var(--maroon-dark);
+    padding: 0 3px;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+@media (max-width: 576px) {
+    .letter {
+        padding: 18px;
+        font-size: 14px;
+    }
+}
+
+
+/* =========================
+   LOGOUT CONFIRMATION
+========================= */
+
+.logout-modal .modal-content {
+    border: none;
+    border-top: 5px solid var(--maroon);
+    border-radius: 10px;
+    box-shadow: 0 20px 50px rgba(46, 10, 18, 0.3);
+}
+
+.logout-modal .logout-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    background: var(--maroon);
+    color: var(--gold-soft);
+    border: 3px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.logout-modal .modal-title {
+    font-family: var(--font-head);
+    color: var(--maroon-deep);
+}
+
+
+/* =========================
+   NOTICE BANNER (System Settings > General)
+========================= */
+
+.site-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--gold-tint);
+    border: 1px solid #efdca6;
+    border-left: 5px solid var(--gold);
+    color: #4a3500;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-weight: 500;
+}
+
+.site-notice i {
+    color: #a37400;
+    margin-top: 3px;
+}
+
+.site-notice-bar {
+    background: var(--gold-tint);
+    border-bottom: 1px solid #efdca6;
+}
+
+.site-notice-bar .site-notice {
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    padding: 10px 0;
+}
+
+
+/* Round emblem icon used at the top of small dialogs */
+.round-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--maroon);
+    color: var(--gold-soft);
+    border: 3px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 21px;
+}

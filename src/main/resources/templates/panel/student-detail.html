@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Student Details', 'panel', 'students', ~{::main})}">
+<body>
+<main>
+
+    <a th:href="@{/panel/students}" class="back-link">
+        <i class="fa-solid fa-arrow-left"></i> Back to Student Details
+    </a>
+
+    <div class="page-head">
+        <div>
+            <h1 th:text="${student.fullName}">Student</h1>
+            <p>
+                Interview on <strong th:text="${#temporals.format(interview.interviewDate, 'dd/MM/yyyy hh:mm a')}">date</strong>
+                &middot; <span th:text="${interview.venue}">venue</span>
+            </p>
+        </div>
+        <div class="actions">
+            <th:block th:replace="~{fragments/app :: status(${interview.status})}"></th:block>
+            <a th:if="${interview.status != 'COMPLETED'}" th:href="@{/panel/interview/{id}(id=${interview.interviewId})}" class="btn btn-maroon">
+                <i class="fa-solid fa-pen-to-square"></i> Mark Interview
+            </a>
+        </div>
+    </div>
+
+    <th:block th:if="${!#lists.isEmpty(marks)}">
+        <div th:replace="~{fragments/applicant :: marksTable(${marks}, ${totalScore})}"></div>
+    </th:block>
+
+    <th:block th:replace="~{fragments/applicant :: applicantDetails(${student}, ${app}, ${olResults})}"></th:block>
+
+</main>
+</body>
+</html>

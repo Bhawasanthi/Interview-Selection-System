@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout(${pageTitle}, 'admin', ${page}, ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1 th:text="${pageTitle}">Staff</h1>
+            <p th:if="${page == 'section-heads'}">Section heads manage selection, interviews and results for one stream.</p>
+            <p th:if="${page == 'panel-members'}">Interview panel members review applicants and record interview marks for one stream.</p>
+        </div>
+        <div class="actions">
+            <a class="btn btn-ghost" th:href="@{/admin/export-staff/{p}(p=${page})}">
+                <i class="fa-solid fa-file-excel"></i> Download Excel
+            </a>
+            <a class="btn btn-ghost" th:href="@{/admin/export-staff/{p}(p=${page}, format='pdf')}">
+                <i class="fa-solid fa-file-pdf"></i> Download PDF
+            </a>
+            <button type="button" class="btn btn-maroon" data-bs-toggle="modal" data-bs-target="#staffModal"
+                    data-fill data-mode="add"
+                    th:attr="data-action=@{/admin/staff/add}, data-heading='Add ' + ${staffRole.roleName}">
+                <i class="fa-solid fa-user-plus"></i>
+                <span th:text="'Add ' + ${staffRole.roleName}">Add</span>
+            </button>
+        </div>
+    </div>
+
+
+    <div class="card-gov">
+
+        <div class="toolbar" th:if="${!#lists.isEmpty(staffList)}">
+            <div class="search-box">
+                <label class="form-label" for="staffSearch">Search</label>
+                <div class="position-relative">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" class="form-control" id="staffSearch" data-filter-search="#staffTable"
+                           placeholder="Name, username or stream">
+                </div>
+            </div>
+        </div>
+
+        <div class="table-scroll" th:if="${!#lists.isEmpty(staffList)}">
+            <table class="table-gov table-stack" id="staffTable">
+                <thead>
+                <tr><th>Name</th><th>Username</th><th>Stream</th><th class="actions-col">Actions</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="staff : ${staffList}">
+                    <td class="cell-main">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="avatar avatar-sm"
+                                  th:text="${#strings.toUpperCase(#strings.substring(staff.name, 0, 1))}">A</span>
+                            <strong th:text="${staff.name}">Name</strong>
+                            <span class="status st-pending" th:if="${#lists.contains(resetRequests, staff.userId)}">Reset requested</span>
+                        </div>
+                    </td>
+                    <td data-label="Username" th:text="${staff.userName}">username</td>
+                    <td data-label="Stream">
+                        <span th:if="${staff.stream != null}" class="subject-chip" th:text="${staff.stream.streamName}">Stream</span>
+                        <span th:if="${staff.stream == null}" class="status st-pending">Not assigned</span>
+                    </td>
+                    <td class="actions-col">
+                        <button type="button" class="btn btn-sm btn-ghost" data-bs-toggle="modal" data-bs-target="#staffModal"
+                                data-fill data-mode="edit"
+                                th:attr="data-action=@{/admin/staff/update/{id}(id=${staff.userId})},
+                                         data-heading='Edit ' + ${staff.name},
+                                         data-f-name=${staff.name}, data-f-username=${staff.userName},
+                                         data-f-stream-id=${staff.stream != null ? staff.stream.streamId : ''}">
+                            <i class="fa-solid fa-pen"></i> Edit
+                        </button>
+                        <form th:action="@{/admin/staff/{id}/reset-password(id=${staff.userId})}" method="post" class="d-inline"
+                              th:attr="data-confirm='Give ' + ${staff.name} + ' a new temporary password? Their current password will stop working.'"
+                              data-confirm-title="Reset Password" data-confirm-ok="Reset Password">
+                            <input type="hidden" name="returnTo" th:value="${page}">
+                            <button type="submit" class="btn btn-sm btn-ghost" title="Reset password">
+                                <i class="fa-solid fa-key"></i><span class="d-none d-xl-inline"> Reset</span>
+                            </button>
+                        </form>
+                        <form th:action="@{/admin/staff/delete/{id}(id=${staff.userId})}" method="post" class="d-inline"
+                              th:attr="data-confirm='Delete ' + ${staff.name} + '\'s account? This cannot be undone.'"
+                              data-confirm-title="Delete Account" data-confirm-ok="Delete" data-confirm-danger="true">
+                            <input type="hidden" name="returnTo" th:value="${page}">
+                            <button type="submit" class="btn btn-sm btn-danger-soft" aria-label="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                <tr class="filter-empty" hidden>
+                    <td colspan="4" class="text-center text-muted py-4">No accounts match your search.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <th:block th:if="${#lists.isEmpty(staffList)}">
+            <div th:replace="~{fragments/app :: empty('fa-user-tie', 'No accounts yet', 'Add the first account using the button above.')}"></div>
+        </th:block>
+
+    </div>
+
+
+    <!-- ADD / EDIT MODAL -->
+
+    <div class="modal fade" id="staffModal" tabindex="-1" aria-labelledby="staffModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form class="modal-content" method="post" th:action="@{/admin/staff/add}">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staffModalTitle" data-heading="Add Account">Add Account</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <input type="hidden" name="roleId" th:value="${staffRole.roleId}">
+                    <input type="hidden" name="returnTo" th:value="${page}">
+
+                    <div class="mb-3">
+                        <label class="form-label required" for="staffName">Name</label>
+                        <input maxlength="100" type="text" class="form-control" id="staffName" name="name" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label required" for="staffUsername">Username</label>
+                        <input maxlength="50" pattern="[A-Za-z0-9._\-]{3,50}" title="3-50 letters, numbers, dots, dashes or underscores" type="text" class="form-control" id="staffUsername" name="username" autocomplete="off" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label required" for="staffStream">Stream</label>
+                        <select class="form-select" id="staffStream" name="streamId" required>
+                            <option value="">-- Select Stream --</option>
+                            <option th:each="s : ${streams}" th:value="${s.streamId}" th:text="${s.streamName}"></option>
+                        </select>
+                    </div>
+
+                    <div data-show-when="add">
+                        <label class="form-label required" for="staffPassword">Password</label>
+                        <input maxlength="100" type="password" class="form-control" id="staffPassword" name="password"
+                               autocomplete="new-password" minlength="6">
+                        <div class="form-text">At least 6 characters.</div>
+                    </div>
+
+                    <div data-show-when="edit" hidden>
+                        <label class="form-label" for="staffNewPassword">New Password</label>
+                        <input maxlength="100" type="password" class="form-control" id="staffNewPassword" name="newPassword"
+                               autocomplete="new-password" minlength="6" placeholder="Leave blank to keep">
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-maroon"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+
+    <!-- The add form needs a password; the edit form must not send one -->
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var modal = document.getElementById("staffModal");
+        modal.addEventListener("shown.bs.modal", function () {
+            var adding = !modal.querySelector('[data-show-when="add"]').hidden;
+            var pw = document.getElementById("staffPassword");
+            pw.required = adding;
+            pw.disabled = !adding;
+            document.getElementById("staffNewPassword").disabled = adding;
+        });
+    });
+    </script>
+
+</main>
+</body>
+</html>

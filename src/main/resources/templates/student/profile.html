@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Profile', 'student', 'profile', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>Profile</h1>
+            <p>Manage your contact details and password.</p>
+        </div>
+    </div>
+
+
+    <div class="row g-4">
+
+        <div class="col-lg-5">
+
+            <div class="card-gov accent">
+                <div class="card-gov-body text-center py-4">
+
+                    <span class="avatar avatar-lg mx-auto mb-3" th:text="${me.initials()}">AB</span>
+
+                    <h2 class="h4 fw-bold mb-1" th:text="${student.fullName}">Name</h2>
+                    <p class="text-muted mb-3">Student</p>
+
+                    <dl class="detail-list text-start mt-4">
+                        <div><dt>Username</dt><dd th:text="${student.username}">username</dd></div>
+                        <div><dt>NIC Number</dt><dd th:text="${student.nic ?: '-'}">NIC</dd></div>
+                        <div><dt>O/L Index Number</dt><dd th:text="${student.indexNumber ?: '-'}">Index</dd></div>
+                        <div>
+                            <dt>Application</dt>
+                            <dd th:if="${app != null}"><th:block th:replace="~{fragments/app :: status(${app.status})}"></th:block></dd>
+                            <dd th:if="${app == null}">Not submitted</dd>
+                        </div>
+                    </dl>
+
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="col-lg-7">
+
+            <form class="card-gov" th:action="@{/student/profile}" method="post">
+
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-user-pen"></i> Contact Details</h2>
+                </div>
+
+                <div class="card-gov-body">
+                    <div class="row g-3">
+
+                        <div class="col-12">
+                            <label class="form-label required" for="fullName">Full Name</label>
+                            <input maxlength="150" type="text" class="form-control" id="fullName" name="fullName"
+                                   th:value="${student.fullName}" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label required" for="email">Email</label>
+                            <input maxlength="150" type="email" class="form-control" id="email" name="email"
+                                   th:value="${student.email}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="phoneNumber">Telephone Number</label>
+                            <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" inputmode="numeric" maxlength="10" pattern="\d{10}" data-digits title="10 digits, numbers only"
+                                   th:value="${student.phoneNumber}">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="whatsappNumber">WhatsApp Number</label>
+                            <input type="tel" class="form-control" id="whatsappNumber" name="whatsappNumber" inputmode="numeric" maxlength="10" pattern="\d{10}" data-digits title="10 digits, numbers only"
+                                   th:value="${student.whatsappNumber}">
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="card-gov-footer">
+                    <button type="submit" class="btn btn-maroon">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Changes
+                    </button>
+                </div>
+
+            </form>
+
+            <form th:replace="~{fragments/app :: passwordCard('/student/profile/password')}"></form>
+
+        </div>
+
+    </div>
+
+</main>
+</body>
+</html>

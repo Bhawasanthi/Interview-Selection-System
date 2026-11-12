@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Student Details', 'panel', 'students', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>Student Details</h1>
+            <p>Applicants invited to interview in your stream.</p>
+        </div>
+    </div>
+
+
+    <div class="card-gov">
+
+        <div class="toolbar" th:if="${!#lists.isEmpty(interviews)}">
+            <div class="search-box">
+                <label class="form-label" for="stSearch">Search</label>
+                <div class="position-relative">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" class="form-control" id="stSearch" data-filter-search="#studentTable"
+                           placeholder="Name, NIC or index number">
+                </div>
+            </div>
+        </div>
+
+        <div class="table-scroll" th:if="${!#lists.isEmpty(interviews)}">
+            <table class="table-gov table-stack" id="studentTable">
+                <thead>
+                <tr><th>Student</th><th>NIC</th><th>Index No.</th><th>District</th><th>Interview</th><th class="actions-col"></th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="i : ${interviews}">
+                    <td class="cell-main">
+                        <strong th:text="${i.application.student.fullName}">Student</strong>
+                        <small th:text="${i.application.student.email}">email</small>
+                    </td>
+                    <td data-label="NIC" th:text="${i.application.student.nic}">NIC</td>
+                    <td data-label="Index No." th:text="${i.application.student.indexNumber}">Index</td>
+                    <td data-label="District" th:text="${i.application.student.district}">District</td>
+                    <td data-label="Interview"><th:block th:replace="~{fragments/app :: status(${i.status})}"></th:block></td>
+                    <td class="actions-col">
+                        <a th:href="@{/panel/student/{id}(id=${i.interviewId})}" class="btn btn-sm btn-outline-maroon">
+                            <i class="fa-solid fa-eye"></i> View
+                        </a>
+                    </td>
+                </tr>
+                <tr class="filter-empty" hidden>
+                    <td colspan="6" class="text-center text-muted py-4">No students match your search.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <th:block th:if="${#lists.isEmpty(interviews)}">
+            <div th:replace="~{fragments/app :: empty('fa-address-card', 'No students yet',
+                'Students appear here once they are invited to an interview.')}"></div>
+        </th:block>
+
+    </div>
+
+</main>
+</body>
+</html>

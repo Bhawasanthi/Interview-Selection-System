@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/public :: head('About Us | Interview Selection System')}"></head>
+
+<body>
+
+<th:block th:replace="~{fragments/public :: header('about')}"></th:block>
+
+
+<!-- =====================================================
+     PAGE BANNER
+===================================================== -->
+
+<section class="page-banner" style="--banner-image: url('/images/school-assembly.jpg')">
+
+    <div class="container">
+
+        <div class="crumbs">
+            <a th:href="@{/}">Home</a> / About
+        </div>
+
+        <h1>About Us</h1>
+
+        <p>
+            Learn more about the Interview Selection System
+            and how it supports a fair and organized
+            student selection process.
+        </p>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     ABOUT THE SYSTEM
+===================================================== -->
+
+<section class="section section-white">
+
+    <div class="container">
+
+        <div class="row align-items-center g-5">
+
+            <div class="col-lg-6 reveal">
+
+                <h2 class="section-title">
+                    About the Interview Selection System
+                </h2>
+
+                <div class="red-line"></div>
+
+                <div class="body-text">
+
+                    <p>
+                        The Interview Selection System is a
+                        web-based platform designed to support
+                        the admission and interview process for
+                        students applying for Advanced Level
+                        education opportunities.
+                    </p>
+
+                    <p>
+                        The system provides a centralized platform
+                        where students can register, submit
+                        applications, receive interview information
+                        and check their selection results.
+                    </p>
+
+                    <p>
+                        School administrators and interview panel
+                        members can manage applications, organize
+                        interviews, evaluate applicants and make
+                        selection decisions through a structured
+                        digital process.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-6 reveal">
+
+                <div class="photo-stack">
+
+                    <img th:src="@{/images/school-assembly.jpg}" src="/images/school-assembly.jpg"
+                         alt="Students gathered at a school assembly">
+
+                    <div class="purpose-card">
+
+                        <div class="info-icon">
+                            <i class="fa-solid fa-building-columns"></i>
+                        </div>
+
+                        <h3>
+                            Our Purpose
+                        </h3>
+
+                        <p>
+                            To make the student interview and
+                            selection process more efficient,
+                            transparent, organized and accessible
+                            through digital technology.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     WHAT THE SYSTEM PROVIDES
+===================================================== -->
+
+<section class="section section-paper">
+
+    <div class="container">
+
+        <div class="text-center mb-5 reveal">
+
+            <h2 class="section-title">
+                What Our System Provides
+            </h2>
+
+            <div class="red-line mx-auto"></div>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            <div class="col-md-6 col-lg-4 reveal">
+                <div class="info-card has-photo">
+                    <div class="card-photo">
+                        <img th:src="@{/images/student-prefect.jpg}" src="/images/student-prefect.jpg" alt="A student of President's College" loading="lazy">
+                    </div>
+                    <div class="card-text">
+                    <div class="info-icon"><i class="fa-solid fa-user-plus"></i></div>
+                    <h4>Student Registration</h4>
+                    <p>
+                        Students can create an account
+                        and begin their application process
+                        online.
+                    </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 reveal">
+                <div class="info-card has-photo">
+                    <div class="card-photo">
+                        <img th:src="@{/images/president-college.jpg}" src="/images/president-college.jpg" alt="President's College entrance" loading="lazy">
+                    </div>
+                    <div class="card-text">
+                    <div class="info-icon"><i class="fa-solid fa-file-lines"></i></div>
+                    <h4>Online Applications</h4>
+                    <p>
+                        Applicants can submit their
+                        educational information and
+                        preferred A/L stream.
+                    </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 reveal">
+                <div class="info-card has-photo">
+                    <div class="card-photo">
+                        <img th:src="@{/images/president-college-campus.jpg}" src="/images/president-college-campus.jpg" alt="School buildings and grounds" loading="lazy">
+                    </div>
+                    <div class="card-text">
+                    <div class="info-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                    <h4>Interview Management</h4>
+                    <p>
+                        Interview schedules and candidate
+                        information can be managed digitally.
+                    </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 reveal">
+                <div class="info-card has-photo">
+                    <div class="card-photo">
+                        <img th:src="@{/images/prefects-ceremony.jpg}" src="/images/prefects-ceremony.jpg" alt="Students at a school ceremony" loading="lazy">
+                    </div>
+                    <div class="card-text">
+                    <div class="info-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+                    <h4>Candidate Evaluation</h4>
+                    <p>
+                        Interview panel members can record
+                        marks and evaluate candidates.
+                    </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 reveal">
+                <div class="info-card has-photo">
+                    <div class="card-photo">
+                        <img th:src="@{/images/school-assembly.jpg}" src="/images/school-assembly.jpg" alt="Students gathered at a school assembly" loading="lazy">
+                    </div>
+                    <div class="card-text">
+                    <div class="info-icon"><i class="fa-solid fa-ranking-star"></i></div>
+                    <h4>Student Selection</h4>
+                    <p>
+                        Candidate results can be processed
+                        according to the defined selection
+                        criteria.
+                    </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4 reveal">
+                <div class="info-card has-photo">
+                    <div class="card-photo">
+                        <img th:src="@{/images/president-college-activities.jpg}" src="/images/president-college-activities.jpg" alt="Students taking part in school activities" loading="lazy">
+                    </div>
+                    <div class="card-text">
+                    <div class="info-icon"><i class="fa-solid fa-bell"></i></div>
+                    <h4>Notifications</h4>
+                    <p>
+                        Students can receive important
+                        information about interviews and
+                        selection results.
+                    </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<footer th:replace="~{fragments/public :: footer}"></footer>
+
+<th:block th:replace="~{fragments/public :: modals}"></th:block>
+
+</body>
+
+</html>

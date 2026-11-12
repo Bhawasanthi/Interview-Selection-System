@@ -1,0 +1,1167 @@
+/* =====================================================
+   PUBLIC SITE (Home, About, Contact Us, Schools)
+   Requires theme.css
+===================================================== */
+
+body {
+    margin: 0;
+    background-color: var(--paper);
+}
+
+
+/* =========================
+   GOVERNMENT STRIP
+========================= */
+
+.gov-strip {
+    background: var(--maroon-deep);
+    color: #e9d9c0;
+    font-size: 13px;
+    padding: 6px 0;
+}
+
+.gov-strip i {
+    color: var(--gold);
+    margin-right: 6px;
+}
+
+.flag-bar {
+    height: 4px;
+    background: linear-gradient(90deg,
+        var(--gold) 0 25%,
+        var(--maroon) 25% 75%,
+        var(--gold) 75% 100%);
+}
+
+
+/* =========================
+   NAVIGATION (links + log in / register)
+========================= */
+
+.main-nav {
+    background-color: var(--maroon);
+    border-bottom: 4px solid var(--gold);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    box-shadow: 0 4px 14px rgba(46, 10, 18, 0.18);
+}
+
+.main-nav > .container {
+    min-height: 68px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.nav-crest {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--maroon-dark);
+    border: 2px solid var(--gold);
+    color: var(--gold-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.nav-crest:hover {
+    background: var(--maroon-deep);
+    color: var(--gold-soft);
+}
+
+.main-nav .nav-link {
+    color: #fff !important;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 23px 20px !important;
+    position: relative;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.main-nav .nav-link i {
+    color: var(--gold-soft);
+    font-size: 14px;
+}
+
+.main-nav .nav-link:hover {
+    background-color: var(--maroon-dark);
+}
+
+.main-nav .nav-link.active-page {
+    background-color: var(--maroon-dark);
+}
+
+.main-nav .nav-link.active-page::after {
+    content: "";
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 0;
+    height: 4px;
+    background: var(--gold-soft);
+}
+
+.nav-auth {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-auth form {
+    margin: 0;
+}
+
+.nav-auth .btn {
+    padding: 9px 18px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+.btn-nav-login {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    color: #fff;
+}
+
+.btn-nav-login:hover,
+.btn-nav-login:focus,
+.btn-nav-login:active {
+    background: #fff !important;
+    border-color: #fff !important;
+    color: var(--maroon) !important;
+}
+
+.main-nav .navbar-toggler {
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    color: #fff;
+    padding: 7px 11px;
+}
+
+.main-nav .navbar-toggler:focus {
+    box-shadow: 0 0 0 3px rgba(212, 162, 28, 0.5);
+}
+
+
+/* =========================
+   HOME HERO
+========================= */
+
+.hero {
+    position: relative;
+    min-height: 560px;
+    background:
+        linear-gradient(100deg,
+            rgba(46, 10, 18, 0.94) 0%,
+            rgba(90, 20, 33, 0.86) 45%,
+            rgba(123, 30, 46, 0.35) 100%),
+        url("/images/school-assembly.jpg") center / cover no-repeat;
+    display: flex;
+    align-items: center;
+    color: #fff;
+}
+
+.hero::after,
+.page-banner::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 6px;
+    background: var(--gold);
+}
+
+.hero-content {
+    max-width: 680px;
+    padding: 70px 0;
+}
+
+.hero-rule {
+    width: 80px;
+    height: 4px;
+    background: var(--gold);
+    margin-bottom: 24px;
+}
+
+.hero h1 {
+    font-size: 50px;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 22px;
+}
+
+.hero h1 .accent {
+    color: var(--gold-soft);
+}
+
+.hero p {
+    font-size: 19px;
+    line-height: 1.75;
+    color: #f1e7e8;
+    margin-bottom: 34px;
+}
+
+.hero-btn {
+    padding: 13px 28px;
+    font-size: 16px;
+    border-radius: 4px;
+    margin: 5px 10px 5px 0;
+}
+
+.btn-outline-white {
+    background: transparent;
+    color: #fff;
+    border: 2px solid #fff;
+}
+
+.btn-outline-white:hover,
+.btn-outline-white:focus {
+    background: #fff;
+    color: var(--maroon);
+}
+
+
+/* =========================
+   INNER PAGE BANNER
+========================= */
+
+.page-banner {
+    position: relative;
+    color: #fff;
+    padding: 86px 0 80px;
+    background:
+        linear-gradient(100deg, rgba(46, 10, 18, 0.93) 0%, rgba(90, 20, 33, 0.85) 55%, rgba(123, 30, 46, 0.55) 100%),
+        var(--banner-image, url("/images/president-college-campus.jpg")) center / cover no-repeat;
+}
+
+.page-banner .crumbs {
+    font-size: 14px;
+    color: #e9d9c0;
+    margin-bottom: 14px;
+}
+
+.page-banner .crumbs a {
+    color: var(--gold-soft);
+    text-decoration: none;
+}
+
+.page-banner h1 {
+    font-size: 44px;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+.page-banner p {
+    font-size: 18px;
+    line-height: 1.7;
+    color: #f1e7e8;
+    max-width: 680px;
+    margin-bottom: 0;
+}
+
+.school-badge {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    background: var(--gold);
+    color: var(--maroon-deep);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+
+/* =========================
+   SECTIONS & HEADINGS
+========================= */
+
+.section {
+    padding: 90px 0;
+}
+
+.section-white {
+    background: var(--surface);
+}
+
+.section-paper {
+    background: var(--paper);
+}
+
+.section-title {
+    font-weight: 700;
+    font-size: 34px;
+    color: var(--maroon-deep);
+}
+
+.red-line {
+    width: 70px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--maroon) 0 60%, var(--gold) 60% 100%);
+    margin: 16px 0 26px;
+}
+
+.section-sub {
+    color: var(--muted);
+    font-size: 17px;
+}
+
+.intro-text,
+.body-text p {
+    font-size: 17px;
+    line-height: 1.85;
+    color: var(--muted);
+}
+
+
+/* =========================
+   HOME: INTRO VISUAL
+========================= */
+
+.intro-visual {
+    position: relative;
+    padding-bottom: 90px;
+}
+
+.intro-photo {
+    width: 100%;
+    height: 340px;
+    object-fit: cover;
+    border-radius: 6px;
+    border-bottom: 6px solid var(--gold);
+    box-shadow: var(--shadow-md);
+}
+
+.intro-visual .info-card {
+    position: absolute;
+    left: 28px;
+    right: 28px;
+    bottom: 0;
+    height: auto;
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+}
+
+.intro-visual .info-icon {
+    margin: 0;
+    flex-shrink: 0;
+}
+
+
+/* =========================
+   INFORMATION CARDS
+========================= */
+
+.info-card {
+    background: var(--surface);
+    padding: 34px 28px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--maroon);
+    height: 100%;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+}
+
+.info-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md);
+    border-top-color: var(--gold);
+}
+
+.info-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--maroon);
+    color: var(--gold-soft);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 22px;
+    font-size: 25px;
+    transition: background-color 0.25s;
+}
+
+.info-card:hover .info-icon {
+    background: var(--maroon-dark);
+}
+
+.info-card h3,
+.info-card h4 {
+    font-size: 21px;
+    font-weight: 700;
+    color: var(--maroon-deep);
+    margin-bottom: 12px;
+}
+
+.info-card p {
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 0;
+}
+
+.info-card.centered {
+    text-align: center;
+}
+
+.info-card.centered .info-icon {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+/* =========================
+   PHOTO CARDS (card with an image on top)
+========================= */
+
+.info-card.has-photo {
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.info-card.has-photo .card-photo {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+    background: var(--maroon-deep);
+}
+
+.info-card.has-photo .card-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.info-card.has-photo .card-photo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent 40%, rgba(46, 10, 18, 0.55));
+}
+
+.info-card.has-photo:hover .card-photo img {
+    transform: scale(1.06);
+}
+
+.info-card.has-photo .card-text {
+    position: relative;
+    padding: 0 28px 30px;
+}
+
+.info-card.has-photo .info-icon {
+    position: relative;
+    z-index: 1;
+    margin-top: -30px;
+    border: 3px solid #fff;
+    box-shadow: var(--shadow-sm);
+}
+
+
+/* =========================
+   PHOTO + CARD STACK
+========================= */
+
+.photo-stack img {
+    width: 100%;
+    height: 330px;
+    object-fit: cover;
+    border-radius: 8px;
+    border-bottom: 6px solid var(--gold);
+    box-shadow: var(--shadow-md);
+    display: block;
+}
+
+.photo-stack .purpose-card,
+.photo-stack .info-card {
+    margin: -70px 24px 0;
+    position: relative;
+}
+
+.side-photo {
+    width: 100%;
+    height: 100%;
+    min-height: 280px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: var(--shadow-md);
+    border-bottom: 6px solid var(--gold);
+}
+
+.photo-band {
+    background:
+        linear-gradient(rgba(247, 244, 238, 0.93), rgba(247, 244, 238, 0.93)),
+        var(--band-image, url("/images/school-assembly.jpg")) center / cover no-repeat;
+}
+
+.map-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-sm);
+    background: var(--surface);
+}
+
+.map-card iframe {
+    display: block;
+    width: 100%;
+    height: 380px;
+    border: 0;
+}
+
+.contact-card .card-photo {
+    margin: -36px -36px 24px;
+    height: 170px;
+    overflow: hidden;
+    border-radius: 6px 6px 0 0;
+}
+
+.contact-card .card-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.gallery-card.small img {
+    height: 240px;
+}
+
+
+/* =========================
+   HOW IT WORKS
+========================= */
+
+.process-row {
+    position: relative;
+}
+
+.process-row::before {
+    content: "";
+    position: absolute;
+    top: 50px;
+    left: 12.5%;
+    right: 12.5%;
+    border-top: 2px dashed var(--gold);
+}
+
+.process-number {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    background: var(--maroon);
+    color: #fff;
+    border: 4px solid #fff;
+    box-shadow: 0 0 0 3px var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 22px;
+    font-family: var(--font-head);
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.process-card {
+    text-align: center;
+    padding: 18px 12px;
+}
+
+.process-card h5 {
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--maroon-deep);
+}
+
+.process-card p {
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+
+/* =========================
+   CALL TO ACTION / BANDS
+========================= */
+
+.cta-section {
+    background:
+        linear-gradient(rgba(46, 10, 18, 0.88), rgba(90, 20, 33, 0.9)),
+        var(--band-image, url("/images/prefects-ceremony.jpg")) center 30% / cover no-repeat;
+    color: #fff;
+    padding: 90px 0;
+    text-align: center;
+    border-top: 6px solid var(--gold);
+}
+
+.cta-section h2 {
+    font-weight: 700;
+    font-size: 36px;
+    margin-bottom: 14px;
+}
+
+.cta-section p {
+    font-size: 18px;
+    color: #f1e7e8;
+    margin-bottom: 30px;
+}
+
+.cta-section .btn {
+    padding: 14px 32px;
+    border-radius: 4px;
+}
+
+
+/* =========================
+   ABOUT: PURPOSE CARD
+========================= */
+
+.purpose-card {
+    position: relative;
+    background: var(--maroon);
+    color: #fff;
+    border-radius: 8px;
+    padding: 44px 38px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    border-bottom: 6px solid var(--gold);
+}
+
+.purpose-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("/images/president-college.jpg") center / cover no-repeat;
+    opacity: 0.14;
+}
+
+.purpose-card > * {
+    position: relative;
+}
+
+.purpose-card .info-icon {
+    background: var(--gold);
+    color: var(--maroon-deep);
+}
+
+.purpose-card h3 {
+    font-weight: 700;
+    font-size: 28px;
+    margin-bottom: 14px;
+}
+
+.purpose-card p {
+    font-size: 17px;
+    line-height: 1.8;
+    color: #f1e7e8;
+    margin-bottom: 0;
+}
+
+
+/* =========================
+   CONTACT
+========================= */
+
+.contact-card,
+.form-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--maroon);
+    border-radius: 8px;
+    padding: 36px;
+    height: 100%;
+    box-shadow: var(--shadow-sm);
+}
+
+.contact-card h2,
+.form-card h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--maroon-deep);
+}
+
+.contact-item {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 16px 0;
+    border-top: 1px solid var(--line);
+}
+
+.contact-icon {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+    border-radius: 6px;
+    background: var(--maroon);
+    color: var(--gold-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.contact-item h5 {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--maroon);
+    margin-bottom: 4px;
+}
+
+.contact-item p {
+    margin: 0;
+    color: var(--ink);
+    line-height: 1.6;
+}
+
+
+/* =========================
+   SCHOOLS
+========================= */
+
+.school-image {
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+    border-radius: 6px;
+    border-bottom: 6px solid var(--gold);
+    box-shadow: var(--shadow-md);
+}
+
+.fact-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 30px 20px;
+    text-align: center;
+    height: 100%;
+    box-shadow: var(--shadow-sm);
+    border-bottom: 4px solid var(--gold);
+}
+
+.fact-card i {
+    font-size: 26px;
+    color: var(--maroon);
+    margin-bottom: 14px;
+}
+
+.fact-card h4 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--maroon-deep);
+    margin-bottom: 4px;
+}
+
+.fact-card p {
+    margin: 0;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+}
+
+.history-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 5px solid var(--maroon);
+    border-radius: 6px;
+    padding: 32px 36px;
+    font-size: 17px;
+    line-height: 1.85;
+    color: var(--muted);
+    box-shadow: var(--shadow-sm);
+}
+
+.gallery-card {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    height: 100%;
+    background: var(--maroon-deep);
+}
+
+.gallery-card img {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.gallery-card:hover img {
+    transform: scale(1.04);
+}
+
+.gallery-card .caption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 50px 24px 20px;
+    background: linear-gradient(transparent, rgba(46, 10, 18, 0.92));
+    color: #fff;
+}
+
+.gallery-card .caption h5 {
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.gallery-card .caption p {
+    margin: 0;
+    color: #f1e7e8;
+    font-size: 14px;
+}
+
+.achievement {
+    display: flex;
+    gap: 22px;
+    align-items: flex-start;
+    background: var(--gold-tint);
+    border: 1px solid #efdca6;
+    border-radius: 8px;
+    padding: 30px 32px;
+}
+
+.achievement .trophy {
+    width: 58px;
+    height: 58px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--maroon-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.achievement h4 {
+    font-weight: 700;
+    color: var(--maroon-deep);
+}
+
+.achievement p {
+    color: var(--muted);
+    line-height: 1.8;
+    font-size: 16px;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+.site-footer {
+    background: var(--maroon-deep);
+    color: #fff;
+    padding: 60px 0 28px;
+}
+
+.site-footer h5,
+.site-footer h6 {
+    font-weight: 700;
+    color: #fff;
+    padding-bottom: 10px;
+    margin-bottom: 18px;
+    border-bottom: 2px solid var(--gold);
+    display: inline-block;
+}
+
+.site-footer h6 {
+    font-family: var(--font-body);
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.site-footer p {
+    color: #d8c6c9;
+    line-height: 1.7;
+}
+
+.site-footer a {
+    color: #d8c6c9;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.site-footer a:hover {
+    color: var(--gold-soft);
+}
+
+.site-footer i {
+    color: var(--gold);
+    width: 20px;
+}
+
+.footer-line {
+    border-color: rgba(255, 255, 255, 0.18);
+    opacity: 1;
+    margin: 30px 0 22px;
+}
+
+.site-footer small {
+    color: #bfa9ad;
+}
+
+
+/* =========================
+   AUTH MODALS
+========================= */
+
+.auth-modal .modal-content {
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.modal-left {
+    color: #fff;
+    padding: 40px;
+    min-height: 100%;
+    border-right: 5px solid var(--gold);
+    background-size: cover;
+    background-position: center;
+}
+
+.modal-left.login-side {
+    background-image:
+        linear-gradient(rgba(46, 10, 18, 0.82), rgba(123, 30, 46, 0.88)),
+        url("/images/president-college.jpg");
+}
+
+.modal-left.signup-side {
+    background-image:
+        linear-gradient(rgba(46, 10, 18, 0.78), rgba(123, 30, 46, 0.9)),
+        url("/images/student-prefect.jpg");
+    background-position: center 20%;
+}
+
+.modal-left h3 {
+    font-weight: 700;
+}
+
+.modal-left p {
+    color: #f1e7e8;
+    line-height: 1.7;
+}
+
+.modal-right {
+    padding: 36px;
+}
+
+.modal-right h4 {
+    font-weight: 700;
+    color: var(--maroon-deep);
+}
+
+.modal-right .btn-maroon {
+    padding: 11px;
+}
+
+.toast-gov {
+    border-left: 5px solid var(--gold);
+}
+
+
+/* =========================
+   REVEAL ANIMATION
+========================= */
+
+.js .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.js .reveal.visible {
+    opacity: 1;
+    transform: none;
+}
+
+@media (max-width: 480px) {
+
+    .nav-auth {
+        gap: 6px;
+    }
+
+    .nav-auth .btn {
+        padding: 7px 10px;
+        font-size: 14px;
+    }
+
+    .nav-crest {
+        width: 38px;
+        height: 38px;
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 360px) {
+    .nav-auth .btn span {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .info-card,
+    .info-card:hover,
+    .gallery-card img {
+        transition: none;
+        transform: none;
+    }
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 991px) {
+
+    .process-row::before {
+        display: none;
+    }
+
+    .main-nav .nav-link {
+        padding: 13px 16px !important;
+    }
+
+    .main-nav .nav-link.active-page::after {
+        left: 0;
+        right: auto;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        height: auto;
+    }
+
+    .main-nav .navbar-collapse {
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        margin: 0 -12px;
+    }
+
+    .main-nav > .container {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .main-nav .navbar-collapse.show,
+    .main-nav .navbar-collapse.collapsing {
+        margin-bottom: -10px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .hero {
+        min-height: 460px;
+        background:
+            linear-gradient(rgba(46, 10, 18, 0.9), rgba(90, 20, 33, 0.88)),
+            url("/images/school-assembly.jpg") center / cover no-repeat;
+    }
+
+    .hero h1 {
+        font-size: 34px;
+    }
+
+    .hero p,
+    .page-banner p {
+        font-size: 17px;
+    }
+
+    .page-banner {
+        padding: 60px 0 56px;
+    }
+
+    .page-banner h1 {
+        font-size: 32px;
+    }
+
+    .section,
+    .cta-section {
+        padding: 64px 0;
+    }
+
+    .section-title {
+        font-size: 28px;
+    }
+
+    .intro-visual {
+        padding-bottom: 0;
+    }
+
+    .intro-photo,
+    .school-image {
+        height: 240px;
+    }
+
+    .intro-visual .info-card {
+        position: static;
+        margin: -40px 14px 0;
+    }
+
+    .contact-card,
+    .form-card,
+    .history-card {
+        padding: 24px;
+    }
+
+    .contact-card .card-photo {
+        margin: -24px -24px 20px;
+    }
+
+    .photo-stack img {
+        height: 230px;
+    }
+
+    .photo-stack .purpose-card,
+    .photo-stack .info-card {
+        margin: -40px 12px 0;
+    }
+
+    .map-card iframe {
+        height: 300px;
+    }
+
+    .achievement {
+        flex-direction: column;
+        padding: 24px;
+    }
+
+    .modal-left {
+        border-right: none;
+        border-bottom: 5px solid var(--gold);
+        padding: 28px;
+    }
+
+    .modal-right {
+        padding: 28px;
+    }
+}

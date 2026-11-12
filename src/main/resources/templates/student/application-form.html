@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('My Application', 'student', 'application', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>Application for Admission to G.C.E (A/L) Class</h1>
+            <p>External Applicant Form</p>
+        </div>
+    </div>
+
+
+    <!-- APPLICATIONS CLOSED -->
+
+    <div class="card-gov accent" th:if="${applicationsOpen == false}">
+        <div class="empty-state">
+            <div class="empty-icon"><i class="fa-solid fa-door-closed"></i></div>
+            <h3>Applications are closed</h3>
+            <p>
+                The school is not accepting applications at the moment<th:block th:if="${applicationDeadline != null}">
+                (the closing date was <strong th:text="${#temporals.format(applicationDeadline, 'dd/MM/yyyy')}">date</strong>)</th:block>.
+                Please contact the school administration for more information.
+            </p>
+            <a th:href="@{/contact}" class="btn btn-ghost">Contact Us</a>
+        </div>
+    </div>
+
+
+    <div class="alert alert-info" th:if="${applicationsOpen != false and applicationDeadline != null}">
+        <i class="fa-solid fa-calendar-day me-1"></i>
+        Applications close on <strong th:text="${#temporals.format(applicationDeadline, 'EEEE, dd MMMM yyyy')}">date</strong>.
+    </div>
+
+
+    <div class="row g-4" th:if="${applicationsOpen != false}">
+
+        <!-- SECTION NAVIGATION -->
+
+        <div class="col-xl-3 d-none d-xl-block">
+            <nav class="card-gov form-steps-nav p-2" aria-label="Form sections">
+                <a href="#sec-1"><span>1</span> Student Details</a>
+                <a href="#sec-2"><span>2</span> Guardian Details</a>
+                <a href="#sec-3"><span>3</span> Age</a>
+                <a href="#sec-4"><span>4</span> National Identity Card</a>
+                <a href="#sec-5"><span>5</span> O/L School Details</a>
+                <a href="#sec-6"><span>6</span> Extra-Curricular Activities</a>
+                <a href="#sec-7"><span>7</span> O/L Examination Results</a>
+                <a href="#sec-8"><span>8</span> Desired A/L Stream</a>
+                <a href="#sec-9"><span>9</span> School Applying To</a>
+            </nav>
+        </div>
+
+
+        <!-- FORM -->
+
+        <div class="col-xl-9">
+
+            <form class="card-gov accent" id="applicationForm" th:action="@{/student/application}" method="post"
+                  data-confirm="Please check your details carefully. You can submit only one application."
+                  data-confirm-title="Submit Application"
+                  data-confirm-ok="Submit Application">
+
+
+                <!-- 1. STUDENT DETAILS -->
+
+                <section class="form-section" id="sec-1">
+
+                    <div class="form-section-title">
+                        <span class="num">1</span>
+                        <h2>Student Details</h2>
+                    </div>
+
+                    <div class="row g-3">
+
+                        <div class="col-12">
+                            <label class="form-label required" for="fullName">Full Name</label>
+                            <input type="text" class="form-control" id="fullName" name="fullName" maxlength="150"
+                                   pattern="[\p{L} .]+" title="Letters, spaces and full stops only"
+                                   th:value="${param.fullName != null ? param.fullName[0] : student.fullName}" autocomplete="name" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label required" for="nameWithInitials">Name with Initials</label>
+                            <input type="text" class="form-control" id="nameWithInitials" name="nameWithInitials" maxlength="100"
+                                   pattern="[\p{L} .]+" title="Letters, spaces and full stops only"
+                                   placeholder="e.g. K.M. Perera" th:value="${param.nameWithInitials}" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label required" for="permanentAddress">Permanent Address</label>
+                            <textarea class="form-control" id="permanentAddress" name="permanentAddress" rows="2" maxlength="255"
+                                      th:text="${param.permanentAddress}" required></textarea>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label required" for="phoneNumber">Telephone Number</label>
+                            <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" inputmode="numeric" maxlength="10" pattern="\d{10}" data-digits
+                                   placeholder="07XXXXXXXX" title="10 digits, numbers only" th:value="${param.phoneNumber}" required>
+                            <div class="form-text">10 digits, numbers only.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label" for="whatsappNumber">WhatsApp Number</label>
+                            <input type="tel" class="form-control" id="whatsappNumber" name="whatsappNumber" inputmode="numeric" maxlength="10" pattern="\d{10}" data-digits
+                                   placeholder="07XXXXXXXX" title="10 digits, numbers only" th:value="${param.whatsappNumber}">
+                            <div class="form-text">Optional. 10 digits, numbers only.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label required" for="gender">Gender</label>
+                            <select class="form-select" id="gender" name="gender" required>
+                                <option value="Male">Male</option>
+                                <option value="Female" th:selected="${param.gender != null and param.gender[0] == 'Female'}">Female</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label required" for="dateOfBirth">Date of Birth</label>
+                            <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth"
+                                   th:min="${earliestBirthDate}" th:max="${latestPastDate}" th:value="${param.dateOfBirth}" required>
+                            <div class="form-text">Must be before today.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label required" for="learningMedium">Learning Medium</label>
+                            <select class="form-select" id="learningMedium" name="learningMedium" required>
+                                <option value="Sinhala">Sinhala</option>
+                                <option value="Tamil" th:selected="${param.learningMedium != null and param.learningMedium[0] == 'Tamil'}">Tamil</option>
+                                <option value="English" th:selected="${param.learningMedium != null and param.learningMedium[0] == 'English'}">English</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label required" for="email">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" maxlength="150"
+                                   th:value="${param.email != null ? param.email[0] : student.email}" autocomplete="email" required>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- 2. GUARDIAN DETAILS -->
+
+                <section class="form-section" id="sec-2">
+
+                    <div class="form-section-title">
+                        <span class="num">2</span>
+                        <h2>Guardian Details</h2>
+                    </div>
+
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label class="form-label required" for="guardianName">Father's / Mother's / Guardian's Name</label>
+                            <input type="text" class="form-control" id="guardianName" name="guardianName" maxlength="150" th:value="${param.guardianName}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label required" for="guardianPhone">Guardian's Telephone Number</label>
+                            <input type="tel" class="form-control" id="guardianPhone" name="guardianPhone" inputmode="numeric" maxlength="10" pattern="\d{10}" data-digits
+                                   placeholder="07XXXXXXXX" title="10 digits, numbers only" th:value="${param.guardianPhone}" required>
+                            <div class="form-text">10 digits, numbers only.</div>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- 3. AGE -->
+
+                <section class="form-section" id="sec-3">
+
+                    <div class="form-section-title">
+                        <span class="num">3</span>
+                        <h2>Age (as at 31st January)</h2>
+                    </div>
+
+                    <div class="row g-3">
+
+                        <div class="col-4">
+                            <label class="form-label required" for="ageYears">Years</label>
+                            <input type="number" class="form-control" id="ageYears" name="ageYears" min="0" max="99" th:value="${param.ageYears}" required>
+                        </div>
+
+                        <div class="col-4">
+                            <label class="form-label required" for="ageMonths">Months</label>
+                            <input type="number" class="form-control" id="ageMonths" name="ageMonths" min="0" max="11" th:value="${param.ageMonths}" required>
+                        </div>
+
+                        <div class="col-4">
+                            <label class="form-label required" for="ageDays">Days</label>
+                            <input type="number" class="form-control" id="ageDays" name="ageDays" min="0" max="31" th:value="${param.ageDays}" required>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- 4. NIC -->
+
+                <section class="form-section" id="sec-4">
+
+                    <div class="form-section-title">
+                        <span class="num">4</span>
+                        <h2>National Identity Card Number</h2>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label required" for="nic">NIC Number</label>
+                            <input type="text" class="form-control" id="nic" name="nic" inputmode="numeric" maxlength="12"
+                                   pattern="\d{12}" data-digits title="12 digits, numbers only" placeholder="e.g. 200712345678"
+                                   th:value="${param.nic}" required>
+                            <div class="form-text">12 digits, numbers only.</div>
+                        </div>
+                    </div>
+
+                </section>
+
+
+                <!-- 5. O/L SCHOOL DETAILS -->
+
+                <section class="form-section" id="sec-5">
+
+                    <div class="form-section-title">
+                        <span class="num">5</span>
+                        <h2>O/L School Details</h2>
+                    </div>
+
+                    <div class="row g-3">
+
+                        <div class="col-12">
+                            <label class="form-label required" for="olSchoolAddress">O/L School Address &amp; Admission Number</label>
+                            <input type="text" class="form-control" id="olSchoolAddress" name="olSchoolAddress"
+                                   placeholder="School address" maxlength="255" th:value="${param.olSchoolAddress}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label required" for="olSchoolAdmissionNumber">School Admission Number</label>
+                            <input type="text" class="form-control" id="olSchoolAdmissionNumber" name="olSchoolAdmissionNumber"
+                                   inputmode="numeric" maxlength="20" pattern="\d+" data-digits title="Numbers only"
+                                   th:value="${param.olSchoolAdmissionNumber}" required>
+                            <div class="form-text">Numbers only.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label required" for="district">District Where School is Located</label>
+                            <input type="text" class="form-control" id="district" name="district" maxlength="50" th:value="${param.district}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label required" for="dateEnteredSchool">Date Entered That School</label>
+                            <input type="date" class="form-control" id="dateEnteredSchool" name="dateEnteredSchool"
+                                   th:max="${latestPastDate}" th:value="${param.dateEnteredSchool}" required>
+                            <div class="form-text">Must be before today.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label required" for="gradeEntered">Grade Entered</label>
+                            <input type="text" class="form-control" id="gradeEntered" name="gradeEntered" maxlength="10"
+                                   placeholder="e.g. Grade 6" th:value="${param.gradeEntered}" required>
+                        </div>
+
+
+
+                    </div>
+
+                </section>
+
+
+                <!-- 6. EXTRA-CURRICULAR -->
+
+                <section class="form-section" id="sec-6">
+
+                    <div class="form-section-title">
+                        <span class="num">6</span>
+                        <h2>Extra-Curricular / Co-Curricular Activities</h2>
+                    </div>
+
+                    <fieldset id="extraCurricularGroup">
+                        <legend class="form-label required mb-2 fs-6">Achievement level (tick all that apply)</legend>
+                        <div class="d-flex flex-wrap gap-4">
+                            <div class="form-check" th:each="level : ${extraCurricularLevels}">
+                                <input class="form-check-input" type="checkbox" name="extraCurricular"
+                                       th:id="'ec_' + ${level.key}" th:value="${level.key}"
+                                       th:checked="${param.extraCurricular != null and #arrays.contains(param.extraCurricular, level.key)}">
+                                <label class="form-check-label" th:for="'ec_' + ${level.key}" th:text="${level.value}">Level</label>
+                            </div>
+                        </div>
+                        <div class="form-text">Tick "None" if you have no achievements; it cannot be combined with other levels.
+                            Bring the certificates to the interview.</div>
+                    </fieldset>
+
+                </section>
+
+
+                <!-- 7. O/L RESULTS -->
+
+                <section class="form-section" id="sec-7">
+
+                    <div class="form-section-title">
+                        <span class="num">7</span>
+                        <h2>G.C.E (O/L) Examination Results</h2>
+                    </div>
+
+                    <div class="row g-3 mb-2">
+                        <div class="col-md-6">
+                            <label class="form-label required" for="indexNumber">O/L Index Number</label>
+                            <input type="text" class="form-control" id="indexNumber" name="indexNumber" inputmode="numeric" maxlength="20"
+                                   pattern="\d+" data-digits title="Numbers only" th:value="${param.indexNumber}" required>
+                            <div class="form-text">Numbers only.</div>
+                        </div>
+                    </div>
+
+
+                    <div class="subhead">Core Subjects</div>
+
+                    <div class="table-scroll mb-3">
+                        <table class="table-gov">
+                            <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th style="width: 160px;">Grade</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="subject, it : ${coreSubjects}">
+                                <td>
+                                    <input type="hidden" name="subjectName" th:value="${subject}">
+                                    <label class="fw-semibold mb-0" th:for="'core' + ${it.index}" th:text="${subject}">Subject</label>
+                                </td>
+                                <td>
+                                    <select class="form-select" name="grade" th:id="'core' + ${it.index}" required>
+                                        <option th:each="g : ${grades}" th:value="${g}" th:text="${g}"
+                                                th:selected="${param.grade != null and #arrays.length(param.grade) > it.index and param.grade[it.index] == g}">A</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                    <div class="row g-3">
+
+                        <div class="col-12"><div class="subhead mb-0">Basket 1 Subject (Category I)</div></div>
+
+                        <div class="col-md-8">
+                            <label class="form-label" for="basket1">Subject</label>
+                            <select class="form-select" id="basket1" name="subjectName" required>
+                                <option th:each="s : ${category1Subjects}" th:value="${s}" th:text="${s}"
+                                        th:selected="${param.subjectName != null and #arrays.length(param.subjectName) > 6 and param.subjectName[6] == s}"></option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label" for="basket1Grade">Grade</label>
+                            <select class="form-select" id="basket1Grade" name="grade" required>
+                                <option th:each="g : ${grades}" th:value="${g}" th:text="${g}"
+                                        th:selected="${param.grade != null and #arrays.length(param.grade) > 6 and param.grade[6] == g}">A</option>
+                            </select>
+                        </div>
+
+
+                        <div class="col-12 mt-4"><div class="subhead mb-0">Basket 2 Subject (Category II)</div></div>
+
+                        <div class="col-md-8">
+                            <label class="form-label" for="basket2">Subject</label>
+                            <select class="form-select" id="basket2" name="subjectName" required>
+                                <option th:each="s : ${category2Subjects}" th:value="${s}" th:text="${s}"
+                                        th:selected="${param.subjectName != null and #arrays.length(param.subjectName) > 7 and param.subjectName[7] == s}"></option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label" for="basket2Grade">Grade</label>
+                            <select class="form-select" id="basket2Grade" name="grade" required>
+                                <option th:each="g : ${grades}" th:value="${g}" th:text="${g}"
+                                        th:selected="${param.grade != null and #arrays.length(param.grade) > 7 and param.grade[7] == g}">A</option>
+                            </select>
+                        </div>
+
+
+                        <div class="col-12 mt-4"><div class="subhead mb-0">Basket 3 Subject (Category III)</div></div>
+
+                        <div class="col-md-8">
+                            <label class="form-label" for="basket3">Subject</label>
+                            <select class="form-select" id="basket3" name="subjectName" required>
+                                <option th:each="s : ${category3Subjects}" th:value="${s}" th:text="${s}"
+                                        th:selected="${param.subjectName != null and #arrays.length(param.subjectName) > 8 and param.subjectName[8] == s}"></option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label" for="basket3Grade">Grade</label>
+                            <select class="form-select" id="basket3Grade" name="grade" required>
+                                <option th:each="g : ${grades}" th:value="${g}" th:text="${g}"
+                                        th:selected="${param.grade != null and #arrays.length(param.grade) > 8 and param.grade[8] == g}">A</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- 8. DESIRED A/L STREAM -->
+
+                <section class="form-section" id="sec-8">
+
+                    <div class="form-section-title">
+                        <span class="num">8</span>
+                        <h2>Desired A/L Stream</h2>
+                    </div>
+
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label class="form-label required" for="streamSelect">Subject Stream Applying For</label>
+                            <select class="form-select" name="streamId" id="streamSelect" required>
+                                <option value="">-- Select Stream --</option>
+                                <option th:each="st : ${streams}" th:value="${st.streamId}" th:text="${st.streamName}"
+                                        th:selected="${param.streamId != null and param.streamId[0] == '' + st.streamId}"></option>
+                            </select>
+                        </div>
+
+                        <div class="col-12"></div>
+
+                        <div class="col-md-4">
+                            <label class="form-label required" for="subject1">Subject 1</label>
+                            <select class="form-select" name="desiredSubject1" id="subject1" required>
+                                <option value="">-- Select Subject 1 --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label required" for="subject2">Subject 2</label>
+                            <select class="form-select" name="desiredSubject2" id="subject2" required>
+                                <option value="">-- Select Subject 2 --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label required" for="subject3">Subject 3</label>
+                            <select class="form-select" name="desiredSubject3" id="subject3" required>
+                                <option value="">-- Select Subject 3 --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-text" id="subjectHint">Select a stream to see the available subjects.</div>
+                            <span hidden id="previousSubjects"
+                                  th:if="${previousSubjects != null}"
+                                  th:attr="data-s1=${previousSubjects[0]}, data-s2=${previousSubjects[1]}, data-s3=${previousSubjects[2]}"></span>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- 9. SCHOOL APPLYING TO -->
+
+                <section class="form-section" id="sec-9">
+
+                    <div class="form-section-title">
+                        <span class="num">9</span>
+                        <h2>School Applying To</h2>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label required" for="schoolId">School</label>
+                            <select class="form-select" id="schoolId" name="schoolId" required>
+                                <option th:each="s : ${schools}" th:value="${s.schoolId}" th:text="${s.schoolName}"
+                                        th:selected="${param.schoolId != null and param.schoolId[0] == '' + s.schoolId}"></option>
+                            </select>
+                        </div>
+                    </div>
+
+                </section>
+
+
+                <div class="card-gov-footer">
+                    <a th:href="@{/student/dashboard}" class="btn btn-ghost">Cancel</a>
+                    <button type="submit" class="btn btn-maroon px-4">
+                        <i class="fa-solid fa-paper-plane"></i> Submit Application
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const streamSelect = document.getElementById("streamSelect");
+        const subject1 = document.getElementById("subject1");
+        const subject2 = document.getElementById("subject2");
+        const subject3 = document.getElementById("subject3");
+        const hint = document.getElementById("subjectHint");
+
+        if (!streamSelect) return;   // form hidden while applications are closed
+
+        // ============================================
+        // SUBJECT DATA (keyed by stream name)
+        // ============================================
+
+        const subjects = {
+
+            Arts: {
+                subject1: [
+                    "Logic & Scientific Method",
+                    "History",
+                    "Sinhala",
+                    "Japanese",
+                    "English Literature",
+                    "Korean",
+                    "Chinese",
+                    "German",
+                    "French"
+                ],
+                subject2: [
+                    "Buddhist Civilization",
+                    "Geography",
+                    "Agriculture",
+                    "Art",
+                    "Drama and Theater",
+                    "Dancing",
+                    "Oriental Music",
+                    "Communication & Media Studies"
+                ],
+                subject3: [
+                    "Economics",
+                    "Information & Communication Technology (ICT)",
+                    "Political Science",
+                    "Communication & Media Studies"
+                ]
+            },
+
+            Commerce: {
+                subject1: [
+                    "Accounting"
+                ],
+                subject2: [
+                    "Business Studies",
+                    "Economics"
+                ],
+                subject3: [
+                    "Information & Communication Technology (ICT)",
+                    "Business Statistics"
+                ]
+            },
+
+            Maths: {
+                subject1: [
+                    "Combined Mathematics"
+                ],
+                subject2: [
+                    "Physics"
+                ],
+                subject3: [
+                    "Chemistry",
+                    "Information & Communication Technology (ICT)"
+                ]
+            },
+
+            // SCIENCE (BIO SCIENCE)
+            Science: {
+                subject1: [
+                    "Biology"
+                ],
+                subject2: [
+                    "Physics",
+                    "Agriculture"
+                ],
+                subject3: [
+                    "Chemistry"
+                ]
+            },
+
+            technology: {
+                subject1: [
+                    "Science for Technology"
+                ],
+                subject2: [
+                    "Bio-System Technology",
+                    "Engineering Technology"
+                ],
+                subject3: [
+                    "Communication & Media Studies",
+                    "Business Studies",
+                    "Geography",
+                    "Art",
+                    "Information & Communication Technology (ICT)",
+                    "Agriculture",
+                    "Mathematics"
+                ]
+            }
+        };
+
+        function fillDropdown(dropdown, options, placeholder) {
+            dropdown.innerHTML = "";
+            const defaultOption = document.createElement("option");
+            defaultOption.value = "";
+            defaultOption.textContent = placeholder;
+            dropdown.appendChild(defaultOption);
+
+            options.forEach(function (subject) {
+                const option = document.createElement("option");
+                option.value = subject;
+                option.textContent = subject;
+                dropdown.appendChild(option);
+            });
+        }
+
+        function resetSubjects() {
+            fillDropdown(subject1, [], "-- Select Subject 1 --");
+            fillDropdown(subject2, [], "-- Select Subject 2 --");
+            fillDropdown(subject3, [], "-- Select Subject 3 --");
+            hint.textContent = "Select a stream to see the available subjects.";
+        }
+
+        function getSelectedStream() {
+            return streamSelect.options[streamSelect.selectedIndex].text.trim();
+        }
+
+        streamSelect.addEventListener("change", function () {
+            const selectedStream = getSelectedStream();
+            resetSubjects();
+
+            if (!subjects[selectedStream]) {
+                return;
+            }
+
+            const streamSubjects = subjects[selectedStream];
+            fillDropdown(subject1, streamSubjects.subject1, "-- Select Subject 1 --");
+            fillDropdown(subject2, streamSubjects.subject2, "-- Select Subject 2 --");
+            fillDropdown(subject3, streamSubjects.subject3, "-- Select Subject 3 --");
+            hint.textContent = "";
+
+            // COMMERCE: ACCOUNTING IS COMPULSORY
+            // (selected, not disabled - disabled fields are not submitted with the form)
+            if (selectedStream === "Commerce") {
+                subject1.value = "Accounting";
+                hint.textContent = "Accounting is compulsory for the Commerce stream.";
+            }
+        });
+
+        // COMMERCE: SUBJECT 3 DEPENDS ON SUBJECT 2
+        subject2.addEventListener("change", function () {
+            if (getSelectedStream() !== "Commerce") {
+                return;
+            }
+
+            const selectedSubject2 = subject2.value;
+
+            if (selectedSubject2 === "Business Studies") {
+                // Economics added to subject 3
+                fillDropdown(subject3, [
+                    "Economics",
+                    "Information & Communication Technology (ICT)",
+                    "Business Statistics"
+                ], "-- Select Subject 3 --");
+            } else if (selectedSubject2 === "Economics") {
+                // Economics not available again
+                fillDropdown(subject3, [
+                    "Information & Communication Technology (ICT)",
+                    "Business Statistics"
+                ], "-- Select Subject 3 --");
+            } else {
+                fillDropdown(subject3, subjects.Commerce.subject3, "-- Select Subject 3 --");
+            }
+        });
+
+        // RE-SHOWN AFTER A VALIDATION ERROR: restore the chosen A/L subjects
+        var previous = document.getElementById("previousSubjects");
+        if (streamSelect.value && previous) {
+            streamSelect.dispatchEvent(new Event("change"));
+            subject1.value = previous.dataset.s1 || subject1.value;
+            subject2.value = previous.dataset.s2 || "";
+            subject2.dispatchEvent(new Event("change"));
+            subject3.value = previous.dataset.s3 || "";
+        }
+
+        // THE THREE A/L SUBJECTS MUST BE DIFFERENT
+        function checkDistinctSubjects() {
+            var values = [subject1.value, subject2.value, subject3.value].filter(Boolean);
+            var duplicate = new Set(values).size !== values.length;
+            subject3.setCustomValidity(duplicate ? "Choose three different A/L subjects." : "");
+        }
+        [subject1, subject2, subject3].forEach(function (s) { s.addEventListener("change", checkDistinctSubjects); });
+
+        // EXTRA-CURRICULAR: at least one box; "None" cannot be combined with a level
+        var ecBoxes = Array.prototype.slice.call(document.querySelectorAll("input[name='extraCurricular']"));
+        var ecNone = document.getElementById("ec_NONE");
+        function syncExtraCurricular(changed) {
+            if (changed === ecNone && ecNone.checked) {
+                ecBoxes.forEach(function (b) { if (b !== ecNone) b.checked = false; });
+            } else if (changed && changed !== ecNone && changed.checked) {
+                ecNone.checked = false;
+            }
+            var any = ecBoxes.some(function (b) { return b.checked; });
+            ecBoxes[0].setCustomValidity(any ? "" : "Tick at least one option, or \"None\".");
+        }
+        ecBoxes.forEach(function (b) { b.addEventListener("change", function () { syncExtraCurricular(b); }); });
+        syncExtraCurricular(null);
+
+        // DATE ENTERED SCHOOL must be after the date of birth (both are already limited to before today)
+        var dob = document.getElementById("dateOfBirth");
+        var entered = document.getElementById("dateEnteredSchool");
+        function syncDates() {
+            entered.min = dob.value || "";
+            entered.setCustomValidity(dob.value && entered.value && entered.value <= dob.value
+                ? "The date entered the school must be after the date of birth." : "");
+        }
+        dob.addEventListener("change", syncDates);
+        entered.addEventListener("change", syncDates);
+        syncDates();
+
+        // Server-side errors: bring the error list into view
+        var errorBox = document.getElementById("formErrors");
+        if (errorBox) errorBox.focus();
+    });
+    </script>
+
+</main>
+</body>
+</html>

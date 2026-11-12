@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Dashboard', 'panel', 'dashboard', ~{::main})}">
+<body>
+<main>
+
+    <section class="welcome">
+        <div class="eyebrow" th:text="${panelUser.stream.streamName} + ' Interview Panel'">Interview Panel</div>
+        <h1>Welcome, <span th:text="${panelUser.name}">Panel Member</span></h1>
+        <p>Review applicants and record interview marks for your stream.</p>
+    </section>
+
+
+    <div class="stat-grid">
+
+        <a class="stat" th:href="@{/panel/assigned}">
+            <div class="stat-icon"><i class="fa-solid fa-calendar-days"></i></div>
+            <div><div class="stat-value" th:text="${assignedCount}">0</div><div class="stat-label">Assigned Interviews</div></div>
+        </a>
+
+        <a class="stat amber" th:href="@{/panel/pending}">
+            <div class="stat-icon"><i class="fa-solid fa-hourglass-half"></i></div>
+            <div><div class="stat-value" th:text="${pendingCount}">0</div><div class="stat-label">Pending</div></div>
+        </a>
+
+        <a class="stat green" th:href="@{/panel/completed}">
+            <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <div><div class="stat-value" th:text="${completedCount}">0</div><div class="stat-label">Completed</div></div>
+        </a>
+
+        <div class="stat purple">
+            <div class="stat-icon"><i class="fa-solid fa-calendar-day"></i></div>
+            <div><div class="stat-value" th:text="${todayCount}">0</div><div class="stat-label">Today</div></div>
+        </div>
+
+    </div>
+
+
+    <div class="row g-4">
+
+        <div class="col-xl-8">
+
+            <div class="card-gov h-100 mb-0">
+
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-hourglass-half"></i> Next Interviews to Mark</h2>
+                    <a th:href="@{/panel/marking}" class="btn btn-sm btn-ghost">View All</a>
+                </div>
+
+                <div class="table-scroll" th:if="${!#lists.isEmpty(next)}">
+                    <table class="table-gov table-stack">
+                        <thead>
+                        <tr><th>Student</th><th>Date</th><th>Time</th><th>Venue</th><th class="actions-col"></th></tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="i : ${next}">
+                            <td class="cell-main">
+                                <strong th:text="${i.application.student.fullName}">Student</strong>
+                                <small th:text="${i.application.student.indexNumber}">index</small>
+                            </td>
+                            <td data-label="Date" th:text="${#temporals.format(i.interviewDate, 'dd/MM/yyyy')}">Date</td>
+                            <td data-label="Time" th:text="${#temporals.format(i.interviewDate, 'hh:mm a')}">Time</td>
+                            <td data-label="Venue" th:text="${i.venue}">Venue</td>
+                            <td class="actions-col">
+                                <a th:href="@{/panel/interview/{id}(id=${i.interviewId})}" class="btn btn-sm btn-maroon">
+                                    <i class="fa-solid fa-pen-to-square"></i> Mark
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <th:block th:if="${#lists.isEmpty(next)}">
+                    <div th:replace="~{fragments/app :: empty('fa-circle-check', 'All caught up',
+                        'There are no interviews waiting for marks right now.')}"></div>
+                </th:block>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-xl-4">
+
+            <div class="card-gov h-100 mb-0">
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-bolt"></i> Quick Links</h2>
+                </div>
+                <div class="card-gov-body">
+                    <div class="quick-links" style="grid-template-columns: 1fr;">
+                        <a class="quick-link" th:href="@{/panel/marking}"><i class="fa-solid fa-pen-to-square"></i> Interview Marking</a>
+                        <a class="quick-link" th:href="@{/panel/students}"><i class="fa-solid fa-address-card"></i> Student Details</a>
+                        <a class="quick-link" th:href="@{/panel/results}"><i class="fa-solid fa-square-poll-vertical"></i> Interview Results</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+</body>
+</html>

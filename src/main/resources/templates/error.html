@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/public :: head('Error | Interview Selection System')}"></head>
+
+<body>
+
+<th:block th:replace="~{fragments/public :: header('')}"></th:block>
+
+
+<section class="section section-paper">
+
+    <div class="container" style="max-width: 640px;">
+
+        <div class="info-card centered py-5">
+
+            <div class="info-icon" th:switch="${status}">
+                <i th:case="403" class="fa-solid fa-lock"></i>
+                <i th:case="404" class="fa-solid fa-compass"></i>
+                <i th:case="*" class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+
+            <div class="text-muted fw-semibold mb-2" th:text="'Error ' + ${status}">Error</div>
+
+            <h1 class="section-title h2" th:switch="${status}">
+                <span th:case="403">Access Denied</span>
+                <span th:case="404">Page Not Found</span>
+                <span th:case="*">Something Went Wrong</span>
+            </h1>
+
+            <div class="red-line mx-auto"></div>
+
+            <p class="mb-4" th:switch="${status}">
+                <span th:case="403">You do not have permission to view this page with your current account.</span>
+                <span th:case="404">The page you are looking for does not exist or has been moved.</span>
+                <span th:case="*">An unexpected error occurred. Please try again, or contact the school administration if the problem continues.</span>
+            </p>
+
+            <div class="d-flex flex-wrap justify-content-center gap-2">
+                <a th:if="${me != null}" th:href="@{${me.home()}}" class="btn btn-maroon">
+                    <i class="fa-solid fa-gauge"></i> Go to My Dashboard
+                </a>
+                <a th:href="@{/}" class="btn btn-outline-maroon">
+                    <i class="fa-solid fa-house"></i> Home
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<footer th:replace="~{fragments/public :: footer}"></footer>
+
+<th:block th:replace="~{fragments/public :: modals}"></th:block>
+
+</body>
+
+</html>

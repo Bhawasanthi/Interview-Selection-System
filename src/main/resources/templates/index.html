@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/public :: head('Interview Selection System')}"></head>
+
+<body>
+
+<th:block th:replace="~{fragments/public :: header('home')}"></th:block>
+
+
+
+<!-- =====================================================
+     HERO SECTION
+===================================================== -->
+
+<section class="hero">
+
+    <div class="container">
+
+        <div class="hero-content">
+
+            <div class="hero-rule"></div>
+
+            <h1>
+                Welcome to the<br>
+                <span class="accent">Interview Selection System</span>
+            </h1>
+
+
+            <p>
+                A digital platform designed to make the
+                Advanced Level student application,
+                interview and selection process
+                simple, organized and transparent.
+            </p>
+
+
+            <div>
+
+                <button class="btn hero-btn btn-gold"
+                        data-bs-toggle="modal"
+                        data-bs-target="#signupModal">
+
+                    <i class="fa-solid fa-user-plus"></i>
+
+                    Apply Now
+
+                </button>
+
+
+                <a th:href="@{/about}"
+                   class="btn hero-btn btn-outline-white">
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                    Learn More
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     INTRODUCTION
+===================================================== -->
+
+<section class="section section-white">
+
+    <div class="container">
+
+        <div class="row align-items-center g-5">
+
+
+            <div class="col-lg-7 reveal">
+
+                <h2 class="section-title">
+
+                    A Smarter Way to Manage
+                    Student Selection
+
+                </h2>
+
+
+                <div class="red-line"></div>
+
+
+                <p class="intro-text">
+
+                    The Interview Selection System is a
+                    web-based platform developed to support
+                    schools in managing applications and
+                    interviews for students seeking
+                    Advanced Level education opportunities.
+
+                </p>
+
+
+                <p class="intro-text">
+
+                    Students can register through the system,
+                    submit their application information,
+                    receive interview details and check
+                    their selection status online.
+
+                </p>
+
+
+                <p class="intro-text">
+
+                    School administrators and interview panel
+                    members can efficiently manage applicants,
+                    interviews, evaluations and selection
+                    decisions through one centralized system.
+
+                </p>
+
+            </div>
+
+
+            <div class="col-lg-5 reveal">
+
+                <div class="intro-visual">
+
+                    <img th:src="@{/images/president-college-campus.jpg}"
+                         src="/images/president-college-campus.jpg"
+                         class="intro-photo"
+                         alt="School buildings and grounds">
+
+                    <div class="info-card">
+
+                        <div class="info-icon">
+
+                            <i class="fa-solid fa-building-columns"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h4>
+                                Fair & Transparent
+                            </h4>
+
+                            <p>
+                                Our system supports an organized
+                                and transparent process for handling
+                                student applications and interviews.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     SYSTEM FEATURES
+===================================================== -->
+
+<section class="section section-paper">
+
+    <div class="container">
+
+
+        <div class="text-center mb-5 reveal">
+
+            <h2 class="section-title">
+
+                Our System Features
+
+            </h2>
+
+            <div class="red-line mx-auto"></div>
+
+            <p class="section-sub">
+
+                Everything needed to manage the
+                student selection process.
+
+            </p>
+
+        </div>
+
+
+
+        <div class="row g-4">
+
+
+            <!-- CARD 1 -->
+
+            <div class="col-md-6 col-lg-4 reveal">
+
+                <div class="info-card has-photo">
+                    <div class="card-photo">
+                        <img th:src="@{/images/student-prefect.jpg}" src="/images/student-prefect.jpg" alt="A student of President's College" loading="lazy">
+                    </div>
+                    <div class="card-text">
+
+                    <div class="info-icon">
+
+                        <i class="fa-solid fa-user-plus"></i>
+
+                    </div>
+
+                    <h4>
+                        Student Registration
+                    </h4>
+
+                    <p>
+                        Students can create an account
+                        and begin their application
+                        through the online system.
+                    </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- CARD 2 -->
+
+            <div class="col-md-6 col-lg-4 reveal">
+
+                <div class="info-card has-photo">
+                    <div class="card-photo">
+                        <img th:src="@{/images/president-college.jpg}" src="/images/president-college.jpg" alt="President's College entrance" loading="lazy">
+                    </div>
+                    <div class="card-text">
+
+                    <div class="info-icon">
+
+                        <i class="fa-solid fa-file-lines"></i>
+
+                    </div>
+
+                    <h4>
+                        Online Application
+                    </h4>
+
+                    <p>
+                        Applicants can provide their
+                        educational information and
+                        preferred A/L stream.
+                    </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- CARD 3 -->
+
+            <div class="col-md-6 col-lg-4 reveal">
+
+                <div class="info-card has-photo">
+                    <div class="card-photo">
+                        <img th:src="@{/images/president-college-campus.jpg}" src="/images/president-college-campus.jpg" alt="School buildings and grounds" loading="lazy">
+                    </div>
+                    <div class="card-text">
+
+                    <div class="info-icon">
+
+                        <i class="fa-solid fa-calendar-check"></i>
+
+                    </div>
+
+                    <h4>
+                        Interview Scheduling
+                    </h4>
+
+                    <p>
+                        Interview information can be
+                        organized and communicated
+                        to selected applicants.
+                    </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- CARD 4 -->
+
+            <div class="col-md-6 col-lg-4 reveal">
+
+                <div class="info-card has-photo">
+                    <div class="card-photo">
+                        <img th:src="@{/images/prefects-ceremony.jpg}" src="/images/prefects-ceremony.jpg" alt="Students at a school ceremony" loading="lazy">
+                    </div>
+                    <div class="card-text">
+
+                    <div class="info-icon">
+
+                        <i class="fa-solid fa-clipboard-check"></i>
+
+                    </div>
+
+                    <h4>
+                        Candidate Evaluation
+                    </h4>
+
+                    <p>
+                        Interview panel members can
+                        record candidate marks and
+                        evaluation information.
+                    </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- CARD 5 -->
+
+            <div class="col-md-6 col-lg-4 reveal">
+
+                <div class="info-card has-photo">
+                    <div class="card-photo">
+                        <img th:src="@{/images/school-assembly.jpg}" src="/images/school-assembly.jpg" alt="Students gathered at a school assembly" loading="lazy">
+                    </div>
+                    <div class="card-text">
+
+                    <div class="info-icon">
+
+                        <i class="fa-solid fa-ranking-star"></i>
+
+                    </div>
+
+                    <h4>
+                        Student Selection
+                    </h4>
+
+                    <p>
+                        Candidate results can be
+                        evaluated according to the
+                        defined selection criteria.
+                    </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- CARD 6 -->
+
+            <div class="col-md-6 col-lg-4 reveal">
+
+                <div class="info-card has-photo">
+                    <div class="card-photo">
+                        <img th:src="@{/images/president-college-activities.jpg}" src="/images/president-college-activities.jpg" alt="Students taking part in school activities" loading="lazy">
+                    </div>
+                    <div class="card-text">
+
+                    <div class="info-icon">
+
+                        <i class="fa-solid fa-bell"></i>
+
+                    </div>
+
+                    <h4>
+                        Notifications
+                    </h4>
+
+                    <p>
+                        Students can receive important
+                        information about interviews
+                        and selection results.
+                    </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     HOW IT WORKS
+===================================================== -->
+
+<section class="section photo-band" style="--band-image: url('/images/president-college-campus.jpg')">
+
+    <div class="container">
+
+
+        <div class="text-center mb-5 reveal">
+
+            <h2 class="section-title">
+
+                How It Works
+
+            </h2>
+
+            <div class="red-line mx-auto"></div>
+
+        </div>
+
+
+        <div class="row g-4 process-row">
+
+
+            <div class="col-sm-6 col-lg-3 reveal">
+
+                <div class="process-card">
+
+                    <div class="process-number">
+                        1
+                    </div>
+
+                    <h5>
+                        Register
+                    </h5>
+
+                    <p>
+                        Create your student account
+                        using the online registration.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="col-sm-6 col-lg-3 reveal">
+
+                <div class="process-card">
+
+                    <div class="process-number">
+                        2
+                    </div>
+
+                    <h5>
+                        Apply
+                    </h5>
+
+                    <p>
+                        Complete and submit your
+                        A/L application information.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="col-sm-6 col-lg-3 reveal">
+
+                <div class="process-card">
+
+                    <div class="process-number">
+                        3
+                    </div>
+
+                    <h5>
+                        Interview
+                    </h5>
+
+                    <p>
+                        Attend the interview according
+                        to the scheduled information.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="col-sm-6 col-lg-3 reveal">
+
+                <div class="process-card">
+
+                    <div class="process-number">
+                        4
+                    </div>
+
+                    <h5>
+                        Selection
+                    </h5>
+
+                    <p>
+                        Check your final selection
+                        result through the system.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     CALL TO ACTION
+===================================================== -->
+
+<section class="cta-section">
+
+    <div class="container reveal">
+
+        <h2>
+            Ready to Begin Your Application?
+        </h2>
+
+        <p>
+            Create your account and start your
+            application today.
+        </p>
+
+
+        <button class="btn btn-gold btn-lg"
+                data-bs-toggle="modal"
+                data-bs-target="#signupModal">
+
+            <i class="fa-solid fa-user-plus"></i>
+
+            Create Student Account
+
+        </button>
+
+    </div>
+
+</section>
+
+
+
+<footer th:replace="~{fragments/public :: footer}"></footer>
+
+<th:block th:replace="~{fragments/public :: modals}"></th:block>
+
+</body>
+
+</html>

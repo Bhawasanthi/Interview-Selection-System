@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Selection Rules', 'admin', 'selection-rules', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>Selection Rules</h1>
+            <p>O/L selection conditions and seat capacity set by each section head for <strong th:text="${year}">2026</strong>.</p>
+        </div>
+        <form class="actions" method="get" th:action="@{/admin/selection-rules}">
+            <div class="input-group">
+                <label class="input-group-text" for="year">Year</label>
+                <input type="number" class="form-control" id="year" name="year" th:value="${year}" style="max-width: 110px;">
+                <button type="submit" class="btn btn-maroon" data-no-loading>Show</button>
+            </div>
+        </form>
+    </div>
+
+
+    <div class="row g-4">
+
+        <div class="col-md-6 col-xl-4" th:each="s : ${streams}"
+             th:with="rules=${conditionsByStream.get(s.streamId)}, cutoff=${cutoffs.get(s.streamId)}">
+
+            <div class="card-gov h-100 mb-0">
+
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-layer-group"></i> <span th:text="${s.streamName}">Stream</span></h2>
+                    <span th:if="${rules != null}" class="status st-selected" th:text="${#lists.size(rules)} + ' rules'">rules</span>
+                    <span th:if="${rules == null}" class="status st-pending">Not set</span>
+                </div>
+
+                <div class="table-scroll" th:if="${rules != null}">
+                    <table class="table-gov">
+                        <thead><tr><th>Subject</th><th>Minimum Grade</th></tr></thead>
+                        <tbody>
+                        <tr th:each="c : ${rules}">
+                            <td th:text="${c.subjectName}">Subject</td>
+                            <td><span class="grade-pill" th:classappend="'g-' + ${c.minGrade}" th:text="${c.minGrade}">A</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card-gov-body text-muted small" th:if="${rules == null}">
+                    The section head has not set selection conditions for this year.
+                </div>
+
+                <div class="card-gov-footer justify-content-between">
+                    <span class="small text-muted">Seats: <strong class="text-dark" th:text="${cutoff != null ? cutoff.seatsAvailable : '-'}">-</strong></span>
+                    <span class="small text-muted">Cutoff mark: <strong class="text-dark" th:text="${cutoff != null and cutoff.cutoffMark != null ? cutoff.cutoffMark : '-'}">-</strong></span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Streams', 'admin', 'streams', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>Streams</h1>
+            <p>A/L subject streams offered by the school.</p>
+        </div>
+        <div class="actions">
+            <a class="btn btn-ghost" th:href="@{/admin/export-streams}">
+                <i class="fa-solid fa-file-excel"></i> Download Excel
+            </a>
+            <a class="btn btn-ghost" th:href="@{/admin/export-streams(format='pdf')}">
+                <i class="fa-solid fa-file-pdf"></i> Download PDF
+            </a>
+            <button type="button" class="btn btn-maroon" data-bs-toggle="modal" data-bs-target="#streamModal"
+                    data-fill th:attr="data-action=@{/admin/streams/save}" data-heading="Add Stream">
+                <i class="fa-solid fa-plus"></i> Add Stream
+            </button>
+        </div>
+    </div>
+
+
+    <div class="alert alert-info">
+        <i class="fa-solid fa-circle-info me-1"></i>
+        The application form lists A/L subjects by stream name (Arts, Commerce, Maths, Science, technology).
+        Renaming one of these streams means its subject list must also be updated in the application form.
+    </div>
+
+
+    <div class="card-gov">
+
+        <div class="table-scroll">
+            <table class="table-gov table-stack">
+                <thead>
+                <tr>
+                    <th>Stream</th>
+                    <th class="num">Applications</th>
+                    <th class="num">Shortlisted</th>
+                    <th class="num">Selected</th>
+                    <th class="num">Section Heads</th>
+                    <th class="num">Panel Members</th>
+                    <th class="actions-col">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="row : ${streamRows}">
+                    <td class="cell-main"><strong th:text="${row.stream.streamName}">Stream</strong></td>
+                    <td class="num" data-label="Applications" th:text="${row.applications}">0</td>
+                    <td class="num" data-label="Shortlisted" th:text="${row.shortlisted}">0</td>
+                    <td class="num" data-label="Selected" th:text="${row.selected}">0</td>
+                    <td class="num" data-label="Section Heads" th:text="${row.heads}">0</td>
+                    <td class="num" data-label="Panel Members" th:text="${row.panel}">0</td>
+                    <td class="actions-col">
+                        <button type="button" class="btn btn-sm btn-ghost" data-bs-toggle="modal" data-bs-target="#streamModal"
+                                data-fill data-heading="Rename Stream"
+                                th:attr="data-action=@{/admin/streams/save}, data-f-stream-id=${row.stream.streamId},
+                                         data-f-stream-name=${row.stream.streamName}">
+                            <i class="fa-solid fa-pen"></i> Rename
+                        </button>
+                        <form th:action="@{/admin/streams/{id}/delete(id=${row.stream.streamId})}" method="post" class="d-inline"
+                              th:attr="data-confirm='Delete the ' + ${row.stream.streamName} + ' stream? This cannot be undone.'"
+                              data-confirm-title="Delete Stream" data-confirm-ok="Delete" data-confirm-danger="true">
+                            <button type="submit" class="btn btn-sm btn-danger-soft"><i class="fa-solid fa-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+
+    <div class="modal fade" id="streamModal" tabindex="-1" aria-labelledby="streamModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form class="modal-content" method="post" th:action="@{/admin/streams/save}">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="streamModalTitle" data-heading="Add Stream">Add Stream</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="streamId" data-reset>
+                    <label class="form-label required" for="streamName">Stream Name</label>
+                    <input maxlength="50" type="text" class="form-control" id="streamName" name="streamName" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-maroon"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/public :: head('Contact Us | Interview Selection System')}"></head>
+
+<body>
+
+<th:block th:replace="~{fragments/public :: header('contact')}"></th:block>
+
+
+<!-- =====================================================
+     PAGE BANNER
+===================================================== -->
+
+<section class="page-banner" style="--banner-image: url('/images/president-college.jpg')">
+
+    <div class="container">
+
+        <div class="crumbs">
+            <a th:href="@{/}">Home</a> / Contact Us
+        </div>
+
+        <h1>Contact Us</h1>
+
+        <p>
+            We are here to help you with your
+            application and interview-related questions.
+        </p>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     CONTACT DETAILS + MESSAGE FORM
+===================================================== -->
+
+<section class="section section-paper">
+
+    <div class="container">
+
+        <div class="row g-4 g-lg-5">
+
+
+            <!-- CONTACT INFORMATION -->
+
+            <div class="col-lg-5 reveal">
+
+                <div class="contact-card">
+
+                    <div class="card-photo">
+                        <img th:src="@{/images/president-college.jpg}" src="/images/president-college.jpg"
+                             alt="President's College Embilipitiya entrance">
+                    </div>
+
+                    <h2>Get in Touch</h2>
+
+                    <div class="red-line"></div>
+
+                    <p class="text-muted mb-3">
+                        For questions regarding applications,
+                        interviews and school admission,
+                        applicants may contact the relevant
+                        school administration.
+                    </p>
+
+
+                    <div class="contact-item">
+
+                        <div class="contact-icon">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+
+                        <div>
+                            <h5>Address</h5>
+                            <p>
+                                President's College<br>
+                                New Town<br>
+                                Embilipitiya<br>
+                                Sri Lanka
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="contact-item">
+
+                        <div class="contact-icon">
+                            <i class="fa-solid fa-phone"></i>
+                        </div>
+
+                        <div>
+                            <h5>Telephone</h5>
+                            <p>
+                                <a href="tel:+94472230202">+94 47 223 0202</a>
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="contact-item">
+
+                        <div class="contact-icon">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+
+                        <div>
+                            <h5>Email</h5>
+                            <p>
+                                <a href="mailto:embpresidentcollege@gmail.com">embpresidentcollege@gmail.com</a>
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="contact-item">
+
+                        <div class="contact-icon">
+                            <i class="fa-solid fa-building-columns"></i>
+                        </div>
+
+                        <div>
+                            <h5>School</h5>
+                            <p>
+                                R/Emb/President's College
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- MESSAGE FORM -->
+
+            <div class="col-lg-7 reveal">
+
+                <div class="form-card">
+
+                    <h2>Send Us a Message</h2>
+
+                    <div class="red-line"></div>
+
+
+                    <div th:if="${contactSuccess}" class="alert alert-success">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span th:text="${contactSuccess}"></span>
+                    </div>
+
+                    <div th:if="${contactError}" class="alert alert-danger">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span th:text="${contactError}"></span>
+                    </div>
+
+
+                    <form th:action="@{/contact}" method="post">
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label" for="contactName">
+                                    Full Name
+                                </label>
+
+                                <input maxlength="150" type="text"
+                                       class="form-control"
+                                       id="contactName"
+                                       name="fullName"
+                                       placeholder="Enter your name"
+                                       autocomplete="name"
+                                       required>
+
+                            </div>
+
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label" for="contactEmail">
+                                    Email Address
+                                </label>
+
+                                <input maxlength="150" type="email"
+                                       class="form-control"
+                                       id="contactEmail"
+                                       name="email"
+                                       placeholder="Enter your email"
+                                       autocomplete="email"
+                                       required>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="mb-3">
+
+                            <label class="form-label" for="contactSubject">
+                                Subject
+                            </label>
+
+                            <input maxlength="150" type="text"
+                                   class="form-control"
+                                   id="contactSubject"
+                                   name="subject"
+                                   placeholder="Enter subject"
+                                   required>
+
+                        </div>
+
+
+                        <div class="mb-4">
+
+                            <label class="form-label" for="contactMessage">
+                                Message
+                            </label>
+
+                            <textarea maxlength="5000" class="form-control"
+                                      id="contactMessage"
+                                      name="message"
+                                      rows="6"
+                                      placeholder="Write your message..."
+                                      required></textarea>
+
+                        </div>
+
+
+                        <button type="submit" class="btn btn-maroon px-4 py-2">
+
+                            <i class="fa-solid fa-paper-plane"></i>
+                            Send Message
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     MAP
+===================================================== -->
+
+<section class="section section-paper pt-0">
+
+    <div class="container reveal">
+
+        <div class="row g-4 align-items-stretch">
+
+            <div class="col-lg-8">
+                <div class="map-card h-100">
+                    <iframe title="Map showing President's College, Embilipitiya"
+                            src="https://maps.google.com/maps?q=President%27s%20College%20Embilipitiya%20Sri%20Lanka&amp;z=15&amp;output=embed"
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                            allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <img th:src="@{/images/president-college-campus.jpg}" src="/images/president-college-campus.jpg"
+                     alt="President's College buildings and grounds" class="side-photo">
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<footer th:replace="~{fragments/public :: footer}"></footer>
+
+<th:block th:replace="~{fragments/public :: modals}"></th:block>
+
+</body>
+
+</html>

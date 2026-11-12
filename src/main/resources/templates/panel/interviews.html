@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout(${pageTitle}, 'panel', ${active}, ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1 th:text="${pageTitle}">Interviews</h1>
+            <p th:text="${pageSubtitle}">Interviews for your stream.</p>
+        </div>
+        <div class="actions">
+            <a class="btn btn-ghost" th:if="${!#lists.isEmpty(interviews)}"
+               th:href="@{/panel/export/{list}(list=${active})}">
+                <i class="fa-solid fa-file-excel"></i> Download Excel
+            </a>
+            <a class="btn btn-ghost" th:if="${!#lists.isEmpty(interviews)}"
+               th:href="@{/panel/export/{list}(list=${active}, format='pdf')}">
+                <i class="fa-solid fa-file-pdf"></i> Download PDF
+            </a>
+        </div>
+    </div>
+
+
+    <div class="card-gov">
+
+        <div class="toolbar" th:if="${!#lists.isEmpty(interviews)}">
+            <div class="search-box">
+                <label class="form-label" for="ivSearch">Search</label>
+                <div class="position-relative">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" class="form-control" id="ivSearch" data-filter-search="#interviewTable"
+                           placeholder="Search by student name or venue">
+                </div>
+            </div>
+            <div class="filter" th:if="${active == 'assigned'}">
+                <label class="form-label" for="ivStatus">Status</label>
+                <select class="form-select" id="ivStatus" data-filter-status="#interviewTable">
+                    <option value="">All</option>
+                    <option value="SCHEDULED">Pending</option>
+                    <option value="COMPLETED">Completed</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-scroll" th:if="${!#lists.isEmpty(interviews)}">
+            <table class="table-gov table-stack" id="interviewTable">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Student</th>
+                    <th>Stream</th>
+                    <th>Venue</th>
+                    <th>Assigned To</th>
+                    <th>Status</th>
+                    <th class="actions-col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="i : ${interviews}" th:attr="data-status=${i.status == 'COMPLETED' ? 'COMPLETED' : 'SCHEDULED'}">
+                    <td data-label="Date" th:text="${#temporals.format(i.interviewDate, 'dd/MM/yyyy')}">Date</td>
+                    <td data-label="Time" th:text="${#temporals.format(i.interviewDate, 'hh:mm a')}">Time</td>
+                    <td class="cell-main">
+                        <strong th:text="${i.application.student.fullName}">Student</strong>
+                        <small th:text="${i.application.student.indexNumber}">index</small>
+                    </td>
+                    <td data-label="Stream" th:text="${i.application.stream.streamName}">Stream</td>
+                    <td data-label="Venue" th:text="${i.venue}">Venue</td>
+                    <td data-label="Assigned To" th:text="${i.user.name}">Panel</td>
+                    <td data-label="Status"><th:block th:replace="~{fragments/app :: status(${i.status})}"></th:block></td>
+                    <td class="actions-col">
+                        <a th:if="${i.status != 'COMPLETED'}" th:href="@{/panel/interview/{id}(id=${i.interviewId})}"
+                           class="btn btn-sm btn-maroon"><i class="fa-solid fa-pen-to-square"></i> Mark</a>
+                        <a th:if="${i.status == 'COMPLETED'}" th:href="@{/panel/student/{id}(id=${i.interviewId})}"
+                           class="btn btn-sm btn-outline-maroon">View</a>
+                    </td>
+                </tr>
+                <tr class="filter-empty" hidden>
+                    <td colspan="8" class="text-center text-muted py-4">No interviews match your search/filter.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <th:block th:if="${#lists.isEmpty(interviews)}">
+            <div th:replace="~{fragments/app :: empty('fa-calendar', 'No interviews here',
+                'Interviews scheduled by the section head for your stream will appear here.')}"></div>
+        </th:block>
+
+    </div>
+
+
+
+</main>
+</body>
+</html>

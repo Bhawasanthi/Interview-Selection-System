@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Site Activity', 'admin', 'activity', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>Site Activity</h1>
+            <p>Who visits the website, which pages they open, and every login to the system.</p>
+        </div>
+        <div class="actions">
+            <nav class="range-switch" aria-label="Time range">
+                <a th:each="r : ${ranges}" th:href="@{/admin/activity(days=${r}, type=${type}, q=${q})}"
+                   th:classappend="${r == days} ? 'active'" th:attr="aria-current=${r == days} ? 'true'"
+                   th:text="${r == 1 ? 'Today' : (r == 365 ? '1 Year' : r + ' Days')}">7 Days</a>
+            </nav>
+        </div>
+    </div>
+
+
+    <!-- KEY FIGURES -->
+
+    <div class="stat-grid">
+
+        <div class="stat">
+            <div class="stat-icon"><i class="fa-solid fa-user-group"></i></div>
+            <div><div class="stat-value" th:text="${summary.visitorsToday}">0</div><div class="stat-label">Visitors Today</div></div>
+        </div>
+
+        <div class="stat blue">
+            <div class="stat-icon"><i class="fa-solid fa-eye"></i></div>
+            <div><div class="stat-value" th:text="${summary.viewsToday}">0</div><div class="stat-label">Page Views Today</div></div>
+        </div>
+
+        <div class="stat teal">
+            <div class="stat-icon"><i class="fa-solid fa-signal"></i></div>
+            <div>
+                <div class="stat-value"><span class="live-dot" aria-hidden="true"></span><span th:text="${summary.activeNow}">0</span></div>
+                <div class="stat-label">Online Now <span class="text-lowercase fw-normal">(15 min)</span></div>
+            </div>
+        </div>
+
+        <div class="stat purple">
+            <div class="stat-icon"><i class="fa-solid fa-users-viewfinder"></i></div>
+            <div>
+                <div class="stat-value" th:text="${summary.visitors}">0</div>
+                <div class="stat-label" th:text="'Unique Visitors · ' + (${days} == 1 ? 'Today' : ${days} + 'd')">Unique Visitors</div>
+            </div>
+        </div>
+
+        <div class="stat gold">
+            <div class="stat-icon"><i class="fa-solid fa-file-lines"></i></div>
+            <div>
+                <div class="stat-value" th:text="${summary.views}">0</div>
+                <div class="stat-label" th:text="'Page Views · ' + (${days} == 1 ? 'Today' : ${days} + 'd')">Page Views</div>
+            </div>
+        </div>
+
+        <a class="stat green" th:href="@{/admin/activity(days=${days}, type='LOGIN')}">
+            <div class="stat-icon"><i class="fa-solid fa-right-to-bracket"></i></div>
+            <div>
+                <div class="stat-value" th:text="${summary.logins}">0</div>
+                <div class="stat-label" th:text="'Logins · ' + ${summary.distinctUsers} + ' users'">Logins</div>
+            </div>
+        </a>
+
+        <a class="stat" th:classappend="${summary.failed + summary.locked > 0} ? 'danger' : 'amber'"
+           th:href="@{/admin/activity(days=${days}, type='FAILED')}">
+            <div class="stat-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <div>
+                <div class="stat-value" th:text="${summary.failed}">0</div>
+                <div class="stat-label" th:text="'Failed Logins · ' + ${summary.locked} + ' blocked'">Failed Logins</div>
+            </div>
+        </a>
+
+    </div>
+
+
+    <!-- TRAFFIC CHART -->
+
+    <div class="card-gov">
+
+        <div class="card-gov-header">
+            <h2><i class="fa-solid fa-chart-column"></i> Traffic</h2>
+            <div class="chart-legend small text-muted">
+                <span><i class="legend-swatch views"></i> Page views</span>
+                <span><i class="legend-swatch visitors"></i> Unique visitors</span>
+            </div>
+        </div>
+
+        <div class="card-gov-body">
+            <div th:if="${dailyMax == 0}" class="text-muted small py-4 text-center">
+                No visits recorded in this period yet. Visits are counted from the moment this feature was installed.
+            </div>
+            <div th:if="${dailyMax > 0}" class="traffic-chart" role="img"
+                 th:attr="aria-label='Daily page views and unique visitors for the last ' + ${days} + ' days'"
+                 th:classappend="${#lists.size(daily) > 31} ? 'dense'">
+                <div class="traffic-day" th:each="d, it : ${daily}"
+                     th:title="${#temporals.format(d.day, 'EEE d MMM yyyy')} + ': ' + ${d.views} + ' page views, ' + ${d.visitors} + ' unique visitors'">
+                    <div class="traffic-bars">
+                        <span class="bar views" th:style="'height:' + (${d.views} * 100 / ${dailyMax}) + '%'"></span>
+                        <span class="bar visitors" th:style="'height:' + (${d.visitors} * 100 / ${dailyMax}) + '%'"></span>
+                    </div>
+                    <span class="traffic-label"
+                          th:text="${#lists.size(daily) <= 14 or it.index % (#lists.size(daily) / 7) == 0 ? #temporals.format(d.day, 'd MMM') : ''}">1 Jan</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="row g-4 mb-4">
+
+        <!-- TOP PAGES -->
+
+        <div class="col-lg-7">
+            <div class="card-gov h-100 mb-0">
+
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-ranking-star"></i> Most Visited Pages</h2>
+                </div>
+
+                <div class="table-scroll" th:if="${!#lists.isEmpty(topPages)}">
+                    <table class="table-gov table-stack">
+                        <thead>
+                        <tr><th>Page</th><th class="num">Views</th><th class="num">Visitors</th></tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="p : ${topPages}">
+                            <td class="cell-main"><code class="page-path" th:text="${p.path}">/</code></td>
+                            <td class="num fw-bold" data-label="Views" th:text="${p.views}">0</td>
+                            <td class="num" data-label="Visitors" th:text="${p.visitors}">0</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <th:block th:if="${#lists.isEmpty(topPages)}">
+                    <div th:replace="~{fragments/app :: empty('fa-ranking-star', 'No page views yet', 'Pages appear here as people use the site.')}"></div>
+                </th:block>
+
+            </div>
+        </div>
+
+
+        <!-- WHO VISITS -->
+
+        <div class="col-lg-5">
+            <div class="card-gov h-100 mb-0">
+
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-chart-pie"></i> Page Views by Visitor Type</h2>
+                </div>
+
+                <div class="card-gov-body">
+                    <div class="d-grid gap-3" th:if="${byRoleTotal > 0}">
+                        <div th:each="e : ${byRole}">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-semibold">
+                                    <i class="fa-solid fa-fw text-muted"
+                                       th:classappend="${e.key == 'Guest'} ? 'fa-globe' : (${e.key == 'Student'} ? 'fa-user-graduate' : 'fa-user-tie')"></i>
+                                    <span th:text="${e.key == 'Guest' ? 'Public visitors (not logged in)' : e.key}">Guest</span>
+                                </span>
+                                <span><strong th:text="${e.value}">0</strong>
+                                    <span class="text-muted small" th:text="'(' + (${e.value} * 100 / ${byRoleTotal}) + '%)'">(0%)</span></span>
+                            </div>
+                            <div class="progress" style="height: 6px;" role="progressbar"
+                                 th:attr="aria-valuenow=${e.value}, aria-valuemax=${byRoleTotal}">
+                                <div class="progress-bar" th:style="'background: var(--maroon); width:' + (${e.value} * 100 / ${byRoleTotal}) + '%'"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-muted small mb-0" th:if="${byRoleTotal == 0}">No page views in this period.</p>
+
+                    <div class="security-note mt-4">
+                        <i class="fa-solid fa-lock"></i>
+                        <div>
+                            <strong>Login protection is on.</strong>
+                            An account is blocked for <span th:text="${lockMinutes}">15</span> minutes after
+                            <span th:text="${maxFailed}">5</span> wrong passwords in a row. Blocked attempts appear below.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- LOGIN HISTORY -->
+
+    <div class="card-gov" id="logins">
+
+        <div class="card-gov-header">
+            <h2><i class="fa-solid fa-clock-rotate-left"></i> Login History
+                <span class="small text-muted fw-normal" th:text="'(' + ${#lists.size(logins)} + (${#lists.size(logins) == 200} ? '+' : '') + ')'">(0)</span></h2>
+            <div class="d-flex gap-2">
+                <a th:href="@{/admin/activity/export(days=${days}, type=${type}, q=${q})}" class="btn btn-sm btn-ghost">
+                    <i class="fa-solid fa-file-excel"></i> Excel
+                </a>
+                <a th:href="@{/admin/activity/export(days=${days}, type=${type}, q=${q}, format='pdf')}" class="btn btn-sm btn-ghost">
+                    <i class="fa-solid fa-file-pdf"></i> PDF
+                </a>
+            </div>
+        </div>
+
+        <form class="toolbar" method="get" th:action="@{/admin/activity}" role="search">
+            <input type="hidden" name="days" th:value="${days}">
+            <div class="search-box">
+                <label class="form-label" for="q">Search</label>
+                <div class="position-relative">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" class="form-control" id="q" name="q" th:value="${q}" maxlength="50"
+                           placeholder="Username or IP address">
+                </div>
+            </div>
+            <div class="filter">
+                <label class="form-label" for="type">Event</label>
+                <select class="form-select" id="type" name="type">
+                    <option value="">All events</option>
+                    <option value="LOGIN" th:selected="${type == 'LOGIN'}">Logged in</option>
+                    <option value="FAILED" th:selected="${type == 'FAILED'}">Wrong password</option>
+                    <option value="LOCKED" th:selected="${type == 'LOCKED'}">Blocked</option>
+                    <option value="LOGOUT" th:selected="${type == 'LOGOUT'}">Logged out</option>
+                </select>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-maroon" data-no-loading>
+                    <i class="fa-solid fa-filter"></i> Apply
+                </button>
+                <a th:if="${q != null or type != null}" th:href="@{/admin/activity(days=${days})}" class="btn btn-ghost">Clear</a>
+            </div>
+        </form>
+
+        <div class="table-scroll" th:if="${!#lists.isEmpty(logins)}">
+            <table class="table-gov table-stack">
+                <thead>
+                <tr><th>Date &amp; Time</th><th>Event</th><th>User</th><th>Role</th><th>IP Address</th><th>Browser / Device</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="l : ${logins}">
+                    <td class="cell-main text-nowrap">
+                        <strong th:text="${#temporals.format(l.at, 'd MMM yyyy')}">1 Jan</strong>
+                        <span class="text-muted" th:text="${#temporals.format(l.at, 'HH:mm:ss')}">10:00</span>
+                    </td>
+                    <td data-label="Event" th:switch="${l.type}">
+                        <span th:case="'LOGIN'" class="status st-selected">Logged in</span>
+                        <span th:case="'FAILED'" class="status st-notselected">Wrong password</span>
+                        <span th:case="'LOCKED'" class="status st-notselected">Blocked</span>
+                        <span th:case="'LOGOUT'" class="status">Logged out</span>
+                        <span th:case="*" class="status" th:text="${l.type}">Event</span>
+                    </td>
+                    <td data-label="User" class="fw-semibold" th:text="${l.username ?: '-'}">username</td>
+                    <td data-label="Role" th:text="${l.role ?: '-'}">Role</td>
+                    <td data-label="IP Address"><code class="page-path" th:text="${l.ip ?: '-'}">127.0.0.1</code></td>
+                    <td data-label="Browser / Device" class="text-muted" th:text="${l.device}" th:title="${l.userAgent}">Chrome</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <th:block th:if="${#lists.isEmpty(logins)}">
+            <div th:replace="~{fragments/app :: empty('fa-clock-rotate-left', 'No login events', 'Logins, failed attempts and logouts in this period appear here.')}"></div>
+        </th:block>
+
+    </div>
+
+
+    <!-- LIVE VISIT FEED -->
+
+    <div class="card-gov">
+
+        <div class="card-gov-header">
+            <h2><i class="fa-solid fa-list-ul"></i> Latest Page Visits</h2>
+            <span class="small text-muted">Last 25</span>
+        </div>
+
+        <div class="table-scroll" th:if="${!#lists.isEmpty(recentVisits)}">
+            <table class="table-gov table-stack">
+                <thead>
+                <tr><th>Time</th><th>Visitor</th><th>Page</th><th>IP Address</th><th>Browser / Device</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="v : ${recentVisits}">
+                    <td class="cell-main text-nowrap">
+                        <strong th:text="${#temporals.format(v.at, 'd MMM')}">1 Jan</strong>
+                        <span class="text-muted" th:text="${#temporals.format(v.at, 'HH:mm:ss')}">10:00</span>
+                    </td>
+                    <td data-label="Visitor">
+                        <th:block th:if="${v.username != null}">
+                            <strong th:text="${v.username}">user</strong>
+                            <span class="small text-muted" th:text="${v.role}">Role</span>
+                        </th:block>
+                        <span th:if="${v.username == null}" class="text-muted"><i class="fa-solid fa-globe"></i> Public visitor</span>
+                    </td>
+                    <td data-label="Page"><code class="page-path" th:text="${v.path}">/</code></td>
+                    <td data-label="IP Address"><code class="page-path" th:text="${v.ip ?: '-'}">127.0.0.1</code></td>
+                    <td data-label="Browser / Device" class="text-muted" th:text="${v.device}" th:title="${v.userAgent}">Chrome</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <th:block th:if="${#lists.isEmpty(recentVisits)}">
+            <div th:replace="~{fragments/app :: empty('fa-list-ul', 'No visits yet', 'Page visits appear here as people use the site.')}"></div>
+        </th:block>
+
+    </div>
+
+</main>
+</body>
+</html>

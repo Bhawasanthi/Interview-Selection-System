@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Cutoff Calculation', 'sectionhead', 'cutoff', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>Cutoff Calculation</h1>
+            <p>Enter the capacity information for the selected stream, then rank interviewed students to find the cutoff mark.</p>
+        </div>
+    </div>
+
+
+    <div class="row g-4">
+
+        <!-- CAPACITY -->
+
+        <div class="col-lg-5">
+
+            <form class="card-gov accent" th:action="@{/sectionhead/cutoff/set-capacity}" method="post">
+
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-chair"></i> Stream Capacity</h2>
+                </div>
+
+                <div class="card-gov-body">
+                    <div class="row g-3">
+
+                        <div class="col-12">
+                            <label class="form-label required" for="year">Academic Year</label>
+                            <input type="number" class="form-control" id="year" name="year" th:value="${year}" required>
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label required" for="totalCapacity">Total Capacity</label>
+                            <input type="number" class="form-control" id="totalCapacity" name="totalCapacity" min="0"
+                                   th:value="${cutoffRecord != null ? cutoffRecord.totalCapacity : ''}" required>
+                        </div>
+
+                        <div class="col-6">
+                            <label class="form-label required" for="internalStudentsCount">Internal Students</label>
+                            <input type="number" class="form-control" id="internalStudentsCount" name="internalStudentsCount" min="0"
+                                   th:value="${cutoffRecord != null ? cutoffRecord.internalStudentsCount : ''}" required>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="info-tile">
+                                <i class="fa-solid fa-user-plus"></i>
+                                <div>
+                                    <small>External Seats Available</small>
+                                    <strong id="seatsPreview" th:text="${cutoffRecord != null ? cutoffRecord.seatsAvailable : '-'}">0</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="card-gov-footer">
+                    <button type="submit" class="btn btn-maroon">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Capacity
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <!-- CURRENT CUTOFF -->
+
+        <div class="col-lg-7">
+
+            <div class="card-gov">
+
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-chart-column"></i> Current Cutoff Information</h2>
+                </div>
+
+                <div class="card-gov-body" th:if="${cutoffRecord != null}">
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-sm-4">
+                            <div class="info-tile">
+                                <i class="fa-solid fa-chair"></i>
+                                <div><small>Seats Available</small><strong th:text="${cutoffRecord.seatsAvailable}">0</strong></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="info-tile">
+                                <i class="fa-solid fa-user-clock"></i>
+                                <div><small>Awaiting Result</small><strong th:text="${awaitingCount}">0</strong></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="info-tile">
+                                <i class="fa-solid fa-flag-checkered"></i>
+                                <div><small>Cutoff Mark</small><strong th:text="${cutoffRecord.cutoffMark ?: 'Not calculated'}">-</strong></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form th:action="@{/sectionhead/cutoff/run}" method="post"
+                          data-confirm="Run the cutoff selection? The top-ranked interviewed students will be marked Selected and the rest Not Selected."
+                          data-confirm-title="Run Cutoff Selection"
+                          data-confirm-ok="Run Cutoff">
+                        <input type="hidden" name="year" th:value="${year}">
+                        <button type="submit" class="btn btn-gold" th:disabled="${awaitingCount == 0}">
+                            <i class="fa-solid fa-play"></i> Run Cutoff Selection
+                        </button>
+                        <span class="small text-muted ms-2" th:if="${awaitingCount == 0}">No interviewed students are waiting for a result.</span>
+                    </form>
+
+                </div>
+
+                <th:block th:if="${cutoffRecord == null}">
+                    <div th:replace="~{fragments/app :: empty('fa-chair', 'Capacity not set',
+                        'Save the stream capacity for this year to calculate the cutoff.')}"></div>
+                </th:block>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- RANKING -->
+
+    <div class="card-gov">
+
+        <div class="card-gov-header">
+            <h2><i class="fa-solid fa-ranking-star"></i> Merit Ranking</h2>
+            <small th:if="${cutoffRecord != null}">The dashed line shows where the available seats end.</small>
+        </div>
+
+        <div class="table-scroll" th:if="${!#lists.isEmpty(ranked)}">
+            <table class="table-gov table-stack">
+                <thead>
+                <tr><th>Rank</th><th>Student</th><th>Index No.</th><th class="num">Total Score</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="app, it : ${ranked}"
+                    th:classappend="${cutoffRecord != null and it.count == cutoffRecord.seatsAvailable} ? 'cutoff-line'">
+                    <td class="rank" data-label="Rank" th:text="${it.count}">1</td>
+                    <td class="cell-main"><strong th:text="${app.student.fullName}">Student</strong></td>
+                    <td data-label="Index No." th:text="${app.student.indexNumber}">Index</td>
+                    <td class="num fw-bold" data-label="Total Score" th:text="${scores.get(app.applicationId)}">0</td>
+                    <td data-label="Status"><th:block th:replace="~{fragments/app :: status(${app.status})}"></th:block></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <th:block th:if="${#lists.isEmpty(ranked)}">
+            <div th:replace="~{fragments/app :: empty('fa-ranking-star', 'No interviewed students yet',
+                'The ranking appears once interview marks have been recorded.')}"></div>
+        </th:block>
+
+    </div>
+
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var total = document.getElementById("totalCapacity");
+        var internal = document.getElementById("internalStudentsCount");
+        var preview = document.getElementById("seatsPreview");
+
+        function update() {
+            var t = parseInt(total.value, 10), i = parseInt(internal.value, 10);
+            var ok = !isNaN(t) && !isNaN(i);
+            preview.textContent = ok ? Math.max(t - i, 0) : "-";
+            internal.setCustomValidity(ok && i > t ? "Internal students cannot be more than the total capacity." : "");
+        }
+
+        total.addEventListener("input", update);
+        internal.addEventListener("input", update);
+    });
+    </script>
+
+</main>
+</body>
+</html>

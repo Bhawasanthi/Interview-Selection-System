@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Dashboard', 'admin', 'dashboard', ~{::main})}">
+<body>
+<main>
+
+    <section class="welcome">
+        <div class="eyebrow">Administration</div>
+        <h1>Admin Dashboard</h1>
+        <p>Overview of the A/L admission process across every stream &middot; Academic Year
+            <strong th:text="${currentYear}">2026</strong></p>
+    </section>
+
+
+    <!-- PASSWORD RESET REQUESTS -->
+
+    <a class="alert alert-warning d-flex align-items-center gap-3 text-decoration-none" role="alert"
+       th:if="${passwordRequestCount > 0}" th:href="@{/admin/password-requests}">
+        <i class="fa-solid fa-key fs-4"></i>
+        <span class="flex-grow-1">
+            <strong th:text="${passwordRequestCount} + (${passwordRequestCount == 1} ? ' password reset request' : ' password reset requests')">1 password reset request</strong>
+            waiting for your action.
+        </span>
+        <span class="btn btn-sm btn-maroon text-nowrap">View Requests <i class="fa-solid fa-arrow-right"></i></span>
+    </a>
+
+
+    <!-- STATISTICS -->
+
+    <div class="stat-grid">
+
+        <a class="stat" th:href="@{/admin/students}">
+            <div class="stat-icon"><i class="fa-solid fa-user-graduate"></i></div>
+            <div><div class="stat-value" th:text="${totalStudents}">0</div><div class="stat-label">Total Students</div></div>
+        </a>
+
+        <a class="stat blue" th:href="@{/admin/applications}">
+            <div class="stat-icon"><i class="fa-solid fa-file-lines"></i></div>
+            <div><div class="stat-value" th:text="${totalApplications}">0</div><div class="stat-label">Applications</div></div>
+        </a>
+
+        <a class="stat gold" th:href="@{/admin/section-heads}">
+            <div class="stat-icon"><i class="fa-solid fa-user-tie"></i></div>
+            <div><div class="stat-value" th:text="${sectionHeadCount}">0</div><div class="stat-label">Section Heads</div></div>
+        </a>
+
+        <a class="stat purple" th:href="@{/admin/panel-members}">
+            <div class="stat-icon"><i class="fa-solid fa-people-group"></i></div>
+            <div><div class="stat-value" th:text="${panelCount}">0</div><div class="stat-label">Panel Members</div></div>
+        </a>
+
+        <a class="stat amber" th:href="@{/admin/applications(status='INTERVIEW_SCHEDULED')}">
+            <div class="stat-icon"><i class="fa-solid fa-calendar-check"></i></div>
+            <div><div class="stat-value" th:text="${pendingInterviews}">0</div><div class="stat-label">Pending Interviews</div></div>
+        </a>
+
+        <a class="stat green" th:href="@{/admin/applications(status='SELECTED')}">
+            <div class="stat-icon"><i class="fa-solid fa-award"></i></div>
+            <div><div class="stat-value" th:text="${selectedCount}">0</div><div class="stat-label">Selected Students</div></div>
+        </a>
+
+    </div>
+
+
+    <!-- STREAM OVERVIEW -->
+
+    <div class="card-gov">
+
+        <div class="card-gov-header">
+            <h2><i class="fa-solid fa-layer-group"></i> Streams Overview</h2>
+            <a th:href="@{/admin/reports}" class="btn btn-sm btn-ghost">Full Report</a>
+        </div>
+
+        <div class="table-scroll">
+            <table class="table-gov table-stack">
+                <thead>
+                <tr>
+                    <th>Stream</th>
+                    <th class="num">Applications</th>
+                    <th class="num">Pending</th>
+                    <th class="num">Shortlisted</th>
+                    <th class="num">Interviewed</th>
+                    <th class="num">Selected</th>
+                    <th class="num">Section Heads</th>
+                    <th class="num">Panel</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="row : ${streamRows}">
+                    <td class="cell-main"><strong th:text="${row.stream.streamName}">Stream</strong></td>
+                    <td class="num" data-label="Applications" th:text="${row.applications}">0</td>
+                    <td class="num" data-label="Pending" th:text="${row.pending}">0</td>
+                    <td class="num" data-label="Shortlisted" th:text="${row.shortlisted}">0</td>
+                    <td class="num" data-label="Interviewed" th:text="${row.interviewed}">0</td>
+                    <td class="num fw-bold" data-label="Selected" th:text="${row.selected}">0</td>
+                    <td class="num" data-label="Section Heads" th:text="${row.heads}">0</td>
+                    <td class="num" data-label="Panel" th:text="${row.panel}">0</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+
+    <div class="row g-4">
+
+        <!-- RECENT APPLICATIONS -->
+
+        <div class="col-xl-8">
+
+            <div class="card-gov h-100 mb-0">
+
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-clock-rotate-left"></i> Recent Applications</h2>
+                    <a th:href="@{/admin/applications}" class="btn btn-sm btn-ghost">View All</a>
+                </div>
+
+                <div class="table-scroll" th:if="${!#lists.isEmpty(recent)}">
+                    <table class="table-gov table-stack">
+                        <thead>
+                        <tr><th>Student</th><th>Stream</th><th>Applied</th><th>Status</th></tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="app : ${recent}">
+                            <td class="cell-main">
+                                <a class="text-decoration-none" th:href="@{/admin/students/{id}(id=${app.student.studentId})}">
+                                    <strong th:text="${app.student.fullName}">Student</strong>
+                                </a>
+                                <small th:text="${app.student.email}">email</small>
+                            </td>
+                            <td data-label="Stream" th:text="${app.stream.streamName}">Stream</td>
+                            <td data-label="Applied" th:text="${#temporals.format(app.applicationDate, 'dd/MM/yyyy')}">Date</td>
+                            <td data-label="Status"><th:block th:replace="~{fragments/app :: status(${app.status})}"></th:block></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <th:block th:if="${#lists.isEmpty(recent)}">
+                    <div th:replace="~{fragments/app :: empty('fa-file-lines', 'No applications yet', 'Submitted applications will appear here.')}"></div>
+                </th:block>
+
+            </div>
+
+        </div>
+
+
+        <!-- QUICK LINKS -->
+
+        <div class="col-xl-4">
+
+            <div class="card-gov h-100 mb-0">
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-bolt"></i> Quick Actions</h2>
+                </div>
+                <div class="card-gov-body">
+                    <div class="quick-links" style="grid-template-columns: 1fr;">
+                        <a class="quick-link" th:href="@{/admin/section-heads}"><i class="fa-solid fa-user-plus"></i> Add Section Head</a>
+                        <a class="quick-link" th:href="@{/admin/panel-members}"><i class="fa-solid fa-people-group"></i> Add Panel Member</a>
+                        <a class="quick-link" th:href="@{/admin/settings}"><i class="fa-solid fa-sliders"></i> Marking Scale</a>
+                        <a class="quick-link" th:href="@{/admin/password-requests}"><i class="fa-solid fa-key"></i> Password Reset Requests</a>
+                        <a class="quick-link" th:href="@{/admin/export-selected}"><i class="fa-solid fa-file-excel"></i> Download Selected (Excel)</a>
+                        <a class="quick-link" th:href="@{/admin/export-selected(format='pdf')}"><i class="fa-solid fa-file-pdf"></i> Download Selected (PDF)</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+</body>
+</html>

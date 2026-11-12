@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('Application Status', 'student', 'status', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>Application Status</h1>
+            <p>Track your application through each stage of the selection process.</p>
+        </div>
+        <div class="actions" th:if="${app != null}">
+            <th:block th:replace="~{fragments/app :: status(${app.status})}"></th:block>
+        </div>
+    </div>
+
+
+    <div class="row g-4">
+
+        <div class="col-lg-7">
+
+            <div class="card-gov accent">
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-list-ol"></i> Progress</h2>
+                </div>
+                <div class="card-gov-body">
+                    <ol th:replace="~{fragments/app :: timeline(${steps})}"></ol>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="col-lg-5">
+
+            <div class="card-gov" th:if="${app != null}">
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-file-lines"></i> Application Summary</h2>
+                </div>
+                <div class="card-gov-body">
+                    <dl class="detail-list cols-1">
+                        <div><dt>Application Number</dt><dd th:text="'#' + ${app.applicationId}">#1</dd></div>
+                        <div><dt>Submitted On</dt><dd th:text="${#temporals.format(app.applicationDate, 'dd/MM/yyyy')}"></dd></div>
+                        <div><dt>Stream</dt><dd th:text="${app.stream.streamName}"></dd></div>
+                        <div><dt>School</dt><dd th:text="${app.school.schoolName}"></dd></div>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card-gov" th:if="${app == null}">
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="fa-solid fa-file-pen"></i></div>
+                    <h3>No application yet</h3>
+                    <p>Submit your application form to start the selection process.</p>
+                    <a th:href="@{/student/application}" class="btn btn-maroon">Complete Application</a>
+                </div>
+            </div>
+
+            <div class="card-gov">
+                <div class="card-gov-header">
+                    <h2><i class="fa-solid fa-circle-info"></i> Status Guide</h2>
+                </div>
+                <div class="card-gov-body d-grid gap-2">
+                    <div class="d-flex justify-content-between align-items-center"><span class="status st-pending">Pending</span><small class="text-muted">Waiting for review</small></div>
+                    <div class="d-flex justify-content-between align-items-center"><span class="status st-shortlisted">Shortlisted</span><small class="text-muted">Met the O/L conditions</small></div>
+                    <div class="d-flex justify-content-between align-items-center"><span class="status st-scheduled">Interview Scheduled</span><small class="text-muted">Invited to interview</small></div>
+                    <div class="d-flex justify-content-between align-items-center"><span class="status st-interviewed">Interviewed</span><small class="text-muted">Marks recorded</small></div>
+                    <div class="d-flex justify-content-between align-items-center"><span class="status st-selected">Selected</span><small class="text-muted">Admission offered</small></div>
+                    <div class="d-flex justify-content-between align-items-center"><span class="status st-notselected">Not Selected</span><small class="text-muted">Not selected this time</small></div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+</body>
+</html>

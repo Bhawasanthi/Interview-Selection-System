@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/app :: layout('All Applicants', 'sectionhead', 'applicants', ~{::main})}">
+<body>
+<main>
+
+    <div class="page-head">
+        <div>
+            <h1>Applicants</h1>
+            <p>Review applicant information and application status for the
+                <strong th:text="${head.stream.streamName}">Stream</strong> stream.</p>
+        </div>
+    </div>
+
+
+    <div class="card-gov">
+
+        <!-- SEARCH + FILTER -->
+
+        <form class="toolbar" method="get" th:action="@{/sectionhead/applicants}" role="search">
+
+            <div class="search-box">
+                <label class="form-label" for="q">Search applicants</label>
+                <div class="position-relative">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" class="form-control" id="q" name="q" th:value="${q}"
+                           placeholder="Name, email, index or NIC number">
+                </div>
+            </div>
+
+            <div class="filter">
+                <label class="form-label" for="status">Status</label>
+                <select class="form-select" id="status" name="status">
+                    <th:block th:replace="~{fragments/app :: statusOptions(${statuses}, ${status})}"></th:block>
+                </select>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-maroon" data-no-loading>
+                    <i class="fa-solid fa-magnifying-glass"></i> Search
+                </button>
+                <a th:if="${q != null or status != null}" th:href="@{/sectionhead/applicants}" class="btn btn-ghost">Clear</a>
+            </div>
+
+        </form>
+
+        <div class="result-count">
+            Showing <strong th:text="${#lists.size(allApplicants)}">0</strong> of
+            <strong th:text="${totalCount}">0</strong> applicants
+        </div>
+
+
+        <!-- TABLE -->
+
+        <div class="table-scroll" th:if="${!#lists.isEmpty(allApplicants)}">
+
+            <table class="table-gov table-stack">
+
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Index No.</th>
+                    <th>Applied</th>
+                    <th>Status</th>
+                    <th class="actions-col">Action</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="app, it : ${allApplicants}">
+                    <td class="rank no-label" th:text="${it.count}">1</td>
+                    <td class="cell-main">
+                        <strong th:text="${app.student.fullName}">Student</strong>
+                        <small th:text="${app.student.nic}">NIC</small>
+                    </td>
+                    <td data-label="Email" th:text="${app.student.email}">email</td>
+                    <td data-label="Index No." th:text="${app.student.indexNumber}">Index</td>
+                    <td data-label="Applied" th:text="${#temporals.format(app.applicationDate, 'dd/MM/yyyy')}">Date</td>
+                    <td data-label="Status"><th:block th:replace="~{fragments/app :: status(${app.status})}"></th:block></td>
+                    <td class="actions-col">
+                        <a th:href="@{/sectionhead/applicant-detail/{id}(id=${app.applicationId})}"
+                           class="btn btn-sm btn-outline-maroon">
+                            <i class="fa-solid fa-eye"></i> View
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <th:block th:if="${#lists.isEmpty(allApplicants)}">
+            <div th:replace="~{fragments/app :: empty('fa-users', 'No applicants found',
+                'Try a different search term or status filter.')}"></div>
+        </th:block>
+
+    </div>
+
+
+</main>
+</body>
+</html>
